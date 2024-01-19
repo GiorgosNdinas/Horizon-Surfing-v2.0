@@ -1,9 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ViewChild, inject } from '@angular/core';
 import { IonBackButton, IonButton, IonButtons, IonContent, IonHeader, IonIcon, IonModal, IonTitle, IonToolbar } from '@ionic/angular/standalone';
 import { OverlayEventDetail } from '@ionic/core/components';
 import { CustomerFormComponent } from "./customer-components/customer-form/customer-form.component";
-import { CustomerListComponent } from "./customer-components/customer-form/customer-list/customer-list.component";
+import { CustomerListComponent } from "./customer-components/customer-list/customer-list.component";
+import { CustomerService } from 'src/app/servicies/customer.service';
+import { Customer } from 'src/app/models/customer.model';
 
 @Component({
     selector: 'app-customers',
@@ -52,18 +54,33 @@ import { CustomerListComponent } from "./customer-components/customer-form/custo
 })
 export class CustomersPage {
   @ViewChild(IonModal) modal!: IonModal;
+  private customerService = inject(CustomerService);
 
-  message = 'This modal example uses triggers to automatically open a modal when the button is clicked.';
-  name!: string;
-
+  // Close the customer modal with a 'cancel' action
   cancel() {
     this.modal.dismiss(null, 'cancel');
   }
 
-  onWillDismiss(event: Event) {
-    const ev = event as CustomEvent<OverlayEventDetail<string>>;
-    if (ev.detail.role === 'confirm') {
-      console.log(ev.detail.data);
-    }
+  /**
+ * Handles the 'willDismiss' event of the modal.
+ * Extracts data from the event and updates the customer list.
+ * @param event The event emitted when the modal is about to be dismissed.
+ */
+onWillDismiss(event: Event) {
+  // Cast the event to a CustomEvent with OverlayEventDetail<string> as the type of the 'detail' property
+  const ev = event as CustomEvent<OverlayEventDetail<string>>;
+
+  // Extract the data from the event
+  let data: any = ev.detail.data;
+
+  // Check if the dismissal role is 'confirm'
+  if (ev.detail.role === 'confirm') {
+    // Update the customer list with the new data
+    this.customerService.customers.set([...this.customerService.customers(), data]);
+
+    // Trigger a search update with the updated customer list
+    this.customerService.searchCustomers.set(this.customerService.customers());
   }
+}
+
 }
