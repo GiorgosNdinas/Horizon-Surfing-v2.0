@@ -1,0 +1,7 @@
+{
+  "name": "Horizon-Surfing-v2.0",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}
