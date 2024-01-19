@@ -3,11 +3,12 @@ import { ChangeDetectionStrategy, Component, ViewChild } from '@angular/core';
 import { IonBackButton, IonButton, IonButtons, IonContent, IonHeader, IonIcon, IonModal, IonTitle, IonToolbar } from '@ionic/angular/standalone';
 import { OverlayEventDetail } from '@ionic/core/components';
 import { CustomerFormComponent } from "./customer-components/customer-form/customer-form.component";
+import { CustomerListComponent } from "./customer-components/customer-form/customer-list/customer-list.component";
 
 @Component({
-  selector: 'app-customers',
-  standalone: true,
-  template: `
+    selector: 'app-customers',
+    standalone: true,
+    template: `
   <ion-header>
     <ion-toolbar>
       <ion-buttons slot="start">
@@ -28,9 +29,6 @@ import { CustomerFormComponent } from "./customer-components/customer-form/custo
                   <ion-button (click)="cancel()">Cancel</ion-button>
                 </ion-buttons>
                 <ion-title>New customer</ion-title>
-                <ion-buttons slot="end">
-                  <ion-button (click)="confirm()" [strong]="true">Confirm</ion-button>
-                </ion-buttons>
               </ion-toolbar>
             </ion-header>
             <ion-content>
@@ -41,12 +39,16 @@ import { CustomerFormComponent } from "./customer-components/customer-form/custo
       </ion-buttons>
     </ion-toolbar>
   </ion-header>
+  <ion-content>
+    <app-customer-list></app-customer-list>
+  </ion-content>
 `,
-  styleUrl: './customers.page.css',
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    CommonModule, IonHeader, IonToolbar, IonButtons, IonBackButton, IonButton, IonTitle, IonIcon, IonModal, IonContent, CustomerFormComponent
-  ]
+    styleUrl: './customers.page.css',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [
+        CommonModule, IonHeader, IonToolbar, IonButtons, IonBackButton, IonButton, IonTitle, IonIcon, IonModal, IonContent, CustomerFormComponent,
+        CustomerListComponent
+    ]
 })
 export class CustomersPage {
   @ViewChild(IonModal) modal!: IonModal;
@@ -58,14 +60,10 @@ export class CustomersPage {
     this.modal.dismiss(null, 'cancel');
   }
 
-  confirm() {
-    this.modal.dismiss(this.name, 'confirm');
-  }
-
   onWillDismiss(event: Event) {
     const ev = event as CustomEvent<OverlayEventDetail<string>>;
     if (ev.detail.role === 'confirm') {
-      this.message = `Hello, ${ev.detail.data}!`;
+      console.log(ev.detail.data);
     }
   }
 }

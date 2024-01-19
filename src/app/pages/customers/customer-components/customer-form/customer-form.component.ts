@@ -1,28 +1,15 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnInit, ViewChild, inject } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { IonCheckbox, IonCol, IonDatetime, IonGrid, IonInput, IonItem, IonLabel, IonRow, IonSelect, IonSelectOption } from '@ionic/angular/standalone';
+import { IonButton, IonButtons, IonCheckbox, IonCol, IonContent, IonDatetime, IonGrid, IonHeader, IonInput, IonItem, IonLabel, IonModal, IonRow, IonSelect, IonSelectOption, IonTitle, IonToolbar, ModalController } from '@ionic/angular/standalone';
 import { Customer } from 'src/app/models/customer.model';
+import { TermsOfServiceComponent } from "../../../terms-of-service/terms-of-service.component";
+import { CustomerService } from 'src/app/servicies/customer.service';
 
 @Component({
-  selector: 'app-customer-form',
-  standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
-    IonGrid,
-    IonRow,
-    IonCol,
-    IonInput,
-    IonItem,
-    IonSelect,
-    IonSelectOption,
-    IonLabel,
-    IonDatetime,
-    IonCheckbox
-  ],
-  template: `
+    selector: 'app-customer-form',
+    standalone: true,
+    template: `
   <form [formGroup] = "customerForm">
     <ion-grid>
       <ion-row>
@@ -169,20 +156,60 @@ import { Customer } from 'src/app/models/customer.model';
           (ionChange)="termsCheckboxClick($event)"
           labelPlacement="end"
           style="white-space: normal;">
-          <ion-label style="white-space: break-spaces;">By checking, you agree to Horizon's surfing center <a  style="text-decoration: none;">Terms of Service</a>.</ion-label>
+          <ion-label style="white-space: break-spaces;">By checking, you agree to Horizon's surfing center <a id="open-modal" style="text-decoration: none;">Terms of Service</a>.</ion-label>
+          <ion-modal trigger="open-modal">
+            <ng-template>
+              <ion-header>
+                <ion-toolbar>
+                  <ion-title>Terms of service</ion-title>
+                  <ion-buttons slot="end">
+                    <ion-button (click)="confirm()" [strong]="true">Confirm</ion-button>
+                  </ion-buttons>
+                </ion-toolbar>
+              </ion-header>
+              <ion-content>
+                <app-terms-of-service></app-terms-of-service>
+              </ion-content>
+            </ng-template>
+          </ion-modal>
         </ion-checkbox>
         </ion-col>
       </ion-row>
+        <ion-button class="ion-margin-top" color="dark" expand="block" fill="outline" [disabled]="formValidation()" (click)="submit()" >Submit</ion-button>
     </ion-grid>
   </form>
   `,
-  styleUrl: './customer-form.component.css',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    styleUrl: './customer-form.component.css',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [
+        CommonModule,
+        FormsModule,
+        ReactiveFormsModule,
+        IonGrid,
+        IonRow,
+        IonCol,
+        IonInput,
+        IonItem,
+        IonSelect,
+        IonSelectOption,
+        IonLabel,
+        IonDatetime,
+        IonCheckbox,
+        IonModal,
+        IonHeader,
+        IonToolbar,
+        IonTitle,
+        IonButtons,
+        IonButton,
+        IonContent,
+        TermsOfServiceComponent
+    ]
 })
-export class CustomerFormComponent {
+export class CustomerFormComponent implements OnInit {
   @Input() customer: Customer | undefined;
+  @ViewChild(IonModal) modal!: IonModal;
 
-  //Form decleration
+  // Form declaration using Angular Reactive Forms
   customerForm = new FormGroup({
     name: new FormControl('', Validators.required),
     surname: new FormControl('', Validators.required),
@@ -198,11 +225,60 @@ export class CustomerFormComponent {
     paid: new FormControl(false)
   });
 
-  // Var thar is needed to set the minimum date on the datepicker.
+  // Variable needed to set the minimum date on the datepicker.
   currentDate: string;
 
+  // Dependency injections
+  private modalCtrl = inject(ModalController);
+  private customerService = inject(CustomerService);
+
   constructor(){
+    // Set the current date for minimum date on the datepicker
     this.currentDate = new Date().toISOString();
+  }
+
+  ngOnInit(): void {
+    // Initialize form values based on whether a customer is provided
+    if(this.customer == undefined)
+      this.customerForm.controls.departureDate.setValue(this.currentDate);
+    else
+      this.populateForm();
+  }
+
+  // Populate the form with customer data
+  private populateForm(): void {
+    const customer: Customer = this.customer!;
+    if (customer) {
+      const {
+        name = '',
+        surname = '',
+        homeAddress = '',
+        hotel = '',
+        hotelRoom = null,
+        email = '',
+        activity = '',
+        activityType = '',
+        insurance = '',
+        departureDate = '',
+        terms = false,
+        paid = false,
+      } = customer;
+
+      this.customerForm.setValue({
+        name,
+        surname,
+        homeAddress,
+        hotel,
+        hotelRoom,
+        email,
+        activity,
+        activityType,
+        insurance,
+        departureDate,
+        terms,
+        paid,
+      });
+    }
   }
 
   // Change the value of the 'terms' form control on every checkbox click
@@ -210,4 +286,25 @@ export class CustomerFormComponent {
     this.customerForm.controls.terms.setValue(e.detail.checked);
   }
 
+  formValidation(){
+    return !this.customerForm.valid || !this.customerForm.value.terms
+  }
+
+  // Close the term and services modal with a 'confirm' action
+  confirm() {
+    this.modal.dismiss('confirm');
+  }
+
+  // Submit the form and dismiss the modal with the submitted data
+  submit(){
+    const newCustomer = {
+      // TODO: Change the id assign to the backend
+      id: this.customerService.customers().length + 1,
+      ...this.customerForm.value,
+      departureDate: this.customerForm.value.departureDate?.split("T")[0],
+      hotelRoom: Number(this.customerForm.value.hotelRoom),
+    };
+    return this.modalCtrl.dismiss(newCustomer, 'confirm');
+  } 
  }
+

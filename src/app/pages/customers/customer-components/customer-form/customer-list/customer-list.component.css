@@ -1,0 +1,21 @@
+.add-customer-button-text {
+  margin-top: 3px;
+}
+ion-row {
+  border-bottom: 1px solid;
+}
+@media only screen and (min-width: 600px) {
+  ion-grid{
+  --ion-grid-padding: 15px;
+  --ion-grid-column-padding: 30px;
+  }
+}
+@media only screen and (max-width: 600px) {
+  ion-row ion-col:nth-child(5) {
+    display: none;
+  }
+  ion-grid{
+  --ion-grid-padding: 10px;
+  --ion-grid-column-padding: 15px;
+  }
+}

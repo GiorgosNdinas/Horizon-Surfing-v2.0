@@ -4,11 +4,12 @@ export interface Customer {
   surname: string,
   homeAddress: string,
   hotel: string,
-  hotelRoom: number,
+  hotelRoom: string,
   email: string,
   activity: string,
   activityType: string,
   insurance: string,
   departureDate: string,
+  terms?: boolean,
   paid: boolean
 }
