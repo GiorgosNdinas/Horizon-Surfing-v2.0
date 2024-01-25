@@ -23,7 +23,8 @@ export class CustomerService {
         activityType: "Rental",
         insurance: "1 week",
         departureDate: "2024-05-15",
-        paid: true
+        paid: true,
+        terms: true
       },
       {
         id: 2,
@@ -37,7 +38,8 @@ export class CustomerService {
         activityType: "Lesson",
         insurance: "2 weeks",
         departureDate: "2024-06-01",
-        paid: false
+        paid: false,
+        terms: true
       },
       {
         id: 3,
@@ -51,7 +53,8 @@ export class CustomerService {
         activityType: "Other",
         insurance: "no",
         departureDate: "2024-07-10",
-        paid: true
+        paid: true,
+        terms: true
       },
       {
         id: 4,
@@ -65,7 +68,8 @@ export class CustomerService {
         activityType: "Rental",
         insurance: "1 week",
         departureDate: "2024-08-20",
-        paid: false
+        paid: false,
+        terms: true
       },
       {
         id: 5,
@@ -79,7 +83,8 @@ export class CustomerService {
         activityType: "Rental",
         insurance: "2 weeks",
         departureDate: "2024-09-05",
-        paid: false
+        paid: false,
+        terms: true
       },
       {
         id: 6,
@@ -93,7 +98,8 @@ export class CustomerService {
         activityType: "Lesson",
         insurance: "1 week",
         departureDate: "2024-10-12",
-        paid: false
+        paid: false,
+        terms: true
       },
       {
         id: 7,
@@ -107,7 +113,8 @@ export class CustomerService {
         activityType: "Other",
         insurance: "2 weeks",
         departureDate: "2024-11-18",
-        paid: false
+        paid: false,
+        terms: true
       },
       {
         id: 8,
@@ -121,7 +128,8 @@ export class CustomerService {
         activityType: "Rental",
         insurance: "no",
         departureDate: "2024-12-03",
-        paid: false
+        paid: false,
+        terms: true
       },
       {
         id: 9,
@@ -135,7 +143,8 @@ export class CustomerService {
         activityType: "Lesson",
         insurance: "1 week",
         departureDate: "2025-01-08",
-        paid: false
+        paid: false,
+        terms: true
       },
       {
         id: 10,
@@ -149,7 +158,8 @@ export class CustomerService {
         activityType: "Rental",
         insurance: "2 weeks",
         departureDate: "2025-02-14",
-        paid: true
+        paid: true,
+        terms: true
       },
       {
         id: 11,
@@ -163,7 +173,8 @@ export class CustomerService {
         activityType: "Other",
         insurance: "1 week",
         departureDate: "2025-03-21",
-        paid: false
+        paid: false,
+        terms: true
       },
       {
         id:12,
@@ -177,7 +188,8 @@ export class CustomerService {
         activityType: "Lesson",
         insurance: "No",
         departureDate: "2025-04-27",
-        paid: false
+        paid: false,
+        terms: true
       },
     ]
   );

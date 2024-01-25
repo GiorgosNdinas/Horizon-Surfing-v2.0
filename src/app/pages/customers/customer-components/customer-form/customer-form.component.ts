@@ -1,15 +1,15 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, Input, OnInit, ViewChild, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnInit, ViewChild, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { IonButton, IonButtons, IonCheckbox, IonCol, IonContent, IonDatetime, IonGrid, IonHeader, IonInput, IonItem, IonLabel, IonModal, IonRow, IonSelect, IonSelectOption, IonTitle, IonToolbar, ModalController } from '@ionic/angular/standalone';
+import { IonButton, IonButtons, IonCheckbox, IonCol, IonContent, IonDatetime, IonFab, IonFabButton, IonFabList, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonModal, IonRow, IonSelect, IonSelectOption, IonTitle, IonToolbar, ModalController } from '@ionic/angular/standalone';
 import { Customer } from 'src/app/models/customer.model';
 import { TermsOfServiceComponent } from "../../../terms-of-service/terms-of-service.component";
 import { CustomerService } from 'src/app/servicies/customer.service';
 
 @Component({
-    selector: 'app-customer-form',
-    standalone: true,
-    template: `
+  selector: 'app-customer-form',
+  standalone: true,
+  template: `
   <form [formGroup] = "customerForm">
     <ion-grid>
       <ion-row>
@@ -21,7 +21,8 @@ import { CustomerService } from 'src/app/servicies/customer.service';
             label="Name*" 
             label-placement="floating" 
             fill="outline" 
-            placeholder="Enter name">
+            placeholder="Enter name"
+            [readonly]="editForm">
           </ion-input>
         </ion-col>
         <ion-col>
@@ -32,7 +33,8 @@ import { CustomerService } from 'src/app/servicies/customer.service';
             label="Surname*" 
             label-placement="floating" 
             fill="outline" 
-            placeholder="Enter surname">
+            placeholder="Enter surname"
+            [readonly]="editForm">
           </ion-input>
         </ion-col>
       </ion-row>
@@ -45,7 +47,9 @@ import { CustomerService } from 'src/app/servicies/customer.service';
             label="Home address*" 
             label-placement="floating" 
             fill="outline" 
-            placeholder="Enter home address"></ion-input>
+            placeholder="Enter home address"
+            [readonly]="editForm">
+          </ion-input>
         </ion-col>
       </ion-row>
       <ion-row>
@@ -57,7 +61,8 @@ import { CustomerService } from 'src/app/servicies/customer.service';
             label="Hotel*" 
             label-placement="floating" 
             fill="outline" 
-            placeholder="Hotel">
+            placeholder="Hotel"
+            [readonly]="editForm">
           </ion-input>
         </ion-col>
         <ion-col >
@@ -69,7 +74,8 @@ import { CustomerService } from 'src/app/servicies/customer.service';
             label-placement="floating" 
             fill="outline" 
             type="number" 
-            placeholder="Room number"></ion-input>
+            placeholder="Room number"
+            [readonly]="editForm"></ion-input>
         </ion-col>
       </ion-row>
       <ion-row>
@@ -80,7 +86,9 @@ import { CustomerService } from 'src/app/servicies/customer.service';
             label="E-mail*" 
             errorText="Invalid email"
             email 
-            label-placement="floating" fill="outline" type="email" placeholder="Enter E-mail"></ion-input>
+            label-placement="floating" fill="outline" type="email" placeholder="Enter E-mail"
+            [readonly]="editForm">
+          </ion-input>
         </ion-col>
       </ion-row>
       <ion-row>
@@ -147,7 +155,8 @@ import { CustomerService } from 'src/app/servicies/customer.service';
           </ion-datetime>
           </ion-col>
       </ion-row>
-      <ion-row>
+      @if(!customerForDisplay){
+        <ion-row>
         <!---------------------------- Terms check ---------------------------->
         <ion-col style="margin-top: 10px; margin-left: 10px;">
           <ion-checkbox 
@@ -163,7 +172,7 @@ import { CustomerService } from 'src/app/servicies/customer.service';
                 <ion-toolbar>
                   <ion-title>Terms of service</ion-title>
                   <ion-buttons slot="end">
-                    <ion-button (click)="confirm()" [strong]="true">Confirm</ion-button>
+                    <ion-button (click)="modalConfirm()" [strong]="true">Confirm</ion-button>
                   </ion-buttons>
                 </ion-toolbar>
               </ion-header>
@@ -175,38 +184,52 @@ import { CustomerService } from 'src/app/servicies/customer.service';
         </ion-checkbox>
         </ion-col>
       </ion-row>
+      }
+      @if(!editForm){
         <ion-button class="ion-margin-top" color="dark" expand="block" fill="outline" [disabled]="formValidation()" (click)="submit()" >Submit</ion-button>
+      }
     </ion-grid>
   </form>
+  @if(customerForDisplay){
+    <ion-fab slot="fixed" vertical="top" horizontal="end">
+      <ion-fab-button (click)="toggleEdit()">
+        <ion-icon name="create-outline"></ion-icon>
+      </ion-fab-button>
+    </ion-fab>
+  }
   `,
-    styleUrl: './customer-form.component.css',
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [
-        CommonModule,
-        FormsModule,
-        ReactiveFormsModule,
-        IonGrid,
-        IonRow,
-        IonCol,
-        IonInput,
-        IonItem,
-        IonSelect,
-        IonSelectOption,
-        IonLabel,
-        IonDatetime,
-        IonCheckbox,
-        IonModal,
-        IonHeader,
-        IonToolbar,
-        IonTitle,
-        IonButtons,
-        IonButton,
-        IonContent,
-        TermsOfServiceComponent
-    ]
+  styleUrl: './customer-form.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    IonGrid,
+    IonRow,
+    IonCol,
+    IonInput,
+    IonItem,
+    IonSelect,
+    IonSelectOption,
+    IonLabel,
+    IonDatetime,
+    IonCheckbox,
+    IonModal,
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonButtons,
+    IonButton,
+    IonContent,
+    IonFab,
+    IonFabList,
+    IonFabButton,
+    IonIcon,
+    TermsOfServiceComponent
+  ]
 })
 export class CustomerFormComponent implements OnInit {
-  @Input() customer: Customer | undefined;
+  @Input() customerForDisplay: Customer | undefined;
   @ViewChild(IonModal) modal!: IonModal;
 
   // Form declaration using Angular Reactive Forms
@@ -227,27 +250,31 @@ export class CustomerFormComponent implements OnInit {
 
   // Variable needed to set the minimum date on the datepicker.
   currentDate: string;
-
   // Dependency injections
   private modalCtrl = inject(ModalController);
   private customerService = inject(CustomerService);
 
-  constructor(){
+  // Variable to edit the customer form
+  editForm = true;
+
+  constructor() {
     // Set the current date for minimum date on the datepicker
     this.currentDate = new Date().toISOString();
   }
 
   ngOnInit(): void {
     // Initialize form values based on whether a customer is provided
-    if(this.customer == undefined)
+    if (this.customerForDisplay == undefined) {
       this.customerForm.controls.departureDate.setValue(this.currentDate);
+      this.editForm = false;
+    }
     else
       this.populateForm();
   }
 
   // Populate the form with customer data
   private populateForm(): void {
-    const customer: Customer = this.customer!;
+    const customer: Customer = this.customerForDisplay!;
     if (customer) {
       const {
         name = '',
@@ -278,6 +305,11 @@ export class CustomerFormComponent implements OnInit {
         terms,
         paid,
       });
+      // Disable the form controls when the form is populated
+      this.customerForm.controls.activity.disable();
+      this.customerForm.controls.activityType.disable();
+      this.customerForm.controls.insurance.disable();
+      this.customerForm.controls.departureDate.disable();
     }
   }
 
@@ -286,25 +318,84 @@ export class CustomerFormComponent implements OnInit {
     this.customerForm.controls.terms.setValue(e.detail.checked);
   }
 
-  formValidation(){
-    return !this.customerForm.valid || !this.customerForm.value.terms
+  formValidation() {
+    return !this.customerForm.valid || !this.customerForm.value.terms;
   }
 
   // Close the term and services modal with a 'confirm' action
-  confirm() {
+  modalConfirm() {
     this.modal.dismiss('confirm');
   }
 
-  // Submit the form and dismiss the modal with the submitted data
-  submit(){
-    const newCustomer = {
-      // TODO: Change the id assign to the backend
-      id: this.customerService.customers().length + 1,
-      ...this.customerForm.value,
-      departureDate: this.customerForm.value.departureDate?.split("T")[0],
-      hotelRoom: Number(this.customerForm.value.hotelRoom),
+  /**
+ * Toggles the edit mode for the customer details form. When in edit mode, certain
+ * form controls (activity, activityType, insurance, departureDate) are disabled to
+ * prevent user modification. In view mode, these controls are enabled, allowing
+ * users to update the customer details.
+ */
+toggleEdit(): void {
+  this.editForm = !this.editForm;
+
+  if (this.editForm) {
+    // Enable certain form controls in edit mode
+    ['activity', 'activityType', 'insurance', 'departureDate'].forEach(controlName => {
+      this.customerForm.get(controlName)?.disable();
+    });
+  } else {
+    // Disable certain form controls in view mode and update the customer details
+    ['activity', 'activityType', 'insurance', 'departureDate'].forEach(controlName => {
+      this.customerForm.get(controlName)?.enable();
+    });
+  }
+}
+
+
+  /**
+ * Submits the form data, either adding a new customer or updating an existing one,
+ * and dismisses the modal with the submitted data. If it's a new customer, it adds
+ * the customer to the list, triggers a search update, and dismisses the modal.
+ * If it's an existing customer, it updates the customer data, triggers a search update,
+ * and closes the editing mode.
+ */
+  submit() {
+    const customer: Customer = {
+      id: (this.customerForDisplay) ? this.customerForDisplay!.id : this.customerService.customers().length + 1,
+      name: this.customerForm.value.name!,
+      surname: this.customerForm.value.surname!,
+      homeAddress: this.customerForm.value.homeAddress!,
+      hotel: this.customerForm.value.hotel!,
+      hotelRoom: this.customerForm.value.hotelRoom!,
+      email: this.customerForm.value.email!,
+      activity: this.customerForm.value.activity!,
+      activityType: this.customerForm.value.activityType!,
+      insurance: this.customerForm.value.insurance!,
+      departureDate: this.customerForm.value.departureDate?.split("T")[0]!,
+      terms: this.customerForm.value.terms!,
+      paid: this.customerForm.value.paid!
     };
-    return this.modalCtrl.dismiss(newCustomer, 'confirm');
-  } 
- }
+
+    // TODO: Each customer change, change the database instead
+    if (!this.customerForDisplay) {
+      // Add the new customer to the list
+      this.customerService.customers.set([...this.customerService.customers(), customer]);
+
+      // Trigger a search update with the updated customer list
+      this.customerService.searchCustomers.set(this.customerService.customers());
+
+      // Dismiss the modal for a new customer
+      return this.modalCtrl.dismiss(customer, 'confirm');
+    } else {
+      // Update the existing customer data
+      Object.assign(this.customerService.customers()[this.customerForDisplay!.id - 1], customer);
+
+      // Trigger a search update with the updated customer list
+      this.customerService.searchCustomers.set(this.customerService.customers());
+
+      // Close the editing mode for an existing customer
+      this.toggleEdit();
+      return;
+    }
+  }
+
+}
 

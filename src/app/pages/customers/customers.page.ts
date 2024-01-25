@@ -5,12 +5,11 @@ import { OverlayEventDetail } from '@ionic/core/components';
 import { CustomerFormComponent } from "./customer-components/customer-form/customer-form.component";
 import { CustomerListComponent } from "./customer-components/customer-list/customer-list.component";
 import { CustomerService } from 'src/app/servicies/customer.service';
-import { Customer } from 'src/app/models/customer.model';
 
 @Component({
-    selector: 'app-customers',
-    standalone: true,
-    template: `
+  selector: 'app-customers',
+  standalone: true,
+  template: `
   <ion-header>
     <ion-toolbar>
       <ion-buttons slot="start">
@@ -23,7 +22,7 @@ import { Customer } from 'src/app/models/customer.model';
           <span class="add-customer-button-text">Add customer</span>
         </ion-button>
         <!-- New customer Modal -->
-        <ion-modal trigger="open-new-customer-modal" (willDismiss)="onWillDismiss($event)">
+        <ion-modal backdropDismiss="false" trigger="open-new-customer-modal" (willDismiss)="onWillDismiss($event)">
           <ng-template>
             <ion-header>
               <ion-toolbar>
@@ -45,12 +44,12 @@ import { Customer } from 'src/app/models/customer.model';
     <app-customer-list></app-customer-list>
   </ion-content>
 `,
-    styleUrl: './customers.page.css',
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [
-        CommonModule, IonHeader, IonToolbar, IonButtons, IonBackButton, IonButton, IonTitle, IonIcon, IonModal, IonContent, CustomerFormComponent,
-        CustomerListComponent
-    ]
+  styleUrl: './customers.page.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    CommonModule, IonHeader, IonToolbar, IonButtons, IonBackButton, IonButton, IonTitle, IonIcon, IonModal, IonContent, CustomerFormComponent,
+    CustomerListComponent
+  ]
 })
 export class CustomersPage {
   @ViewChild(IonModal) modal!: IonModal;
@@ -66,21 +65,16 @@ export class CustomersPage {
  * Extracts data from the event and updates the customer list.
  * @param event The event emitted when the modal is about to be dismissed.
  */
-onWillDismiss(event: Event) {
-  // Cast the event to a CustomEvent with OverlayEventDetail<string> as the type of the 'detail' property
-  const ev = event as CustomEvent<OverlayEventDetail<string>>;
+  onWillDismiss(event: Event) {
+    // Cast the event to a CustomEvent with OverlayEventDetail<string> as the type of the 'detail' property
+    const ev = event as CustomEvent<OverlayEventDetail<string>>;
 
-  // Extract the data from the event
-  let data: any = ev.detail.data;
+    // Extract the data from the event
+    let data: any = ev.detail.data;
 
-  // Check if the dismissal role is 'confirm'
-  if (ev.detail.role === 'confirm') {
-    // Update the customer list with the new data
-    this.customerService.customers.set([...this.customerService.customers(), data]);
-
-    // Trigger a search update with the updated customer list
-    this.customerService.searchCustomers.set(this.customerService.customers());
+    // Check if the dismissal role is 'confirm'
+    if (ev.detail.role === 'confirm') {
+      console.log('Closed with confirm');
+    }
   }
-}
-
 }
