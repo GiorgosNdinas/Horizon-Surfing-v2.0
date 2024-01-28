@@ -4,27 +4,17 @@ import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } 
 import { IonButton, IonCol, IonGrid, IonInput, IonItem, IonRow, IonSelect, IonSelectOption, ModalController } from '@ionic/angular/standalone';
 import { TeamMember } from 'src/app/models/team-members.modal';
 import { TeamMemberService } from 'src/app/servicies/team-member.service';
+import { TeamProfilePhotoComponent } from "../team-profile-photo/team-profile-photo.component";
 
 @Component({
   selector: 'app-team-member-form',
   standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
-    IonGrid,
-    IonRow,
-    IonCol,
-    IonInput,
-    IonSelect,
-    IonSelectOption,
-    IonItem,
-    IonButton,
-  ],
   template: `
+  <app-team-profile-photo (profilePicture)="handleProfilePicture($event)"></app-team-profile-photo>
   <form [formGroup] = "teamMemberForm">
     <ion-grid>
       <ion-row>
+        <!---------------------------- Name input ---------------------------->
         <ion-col>
           <ion-input 
             formControlName = "name"
@@ -35,6 +25,7 @@ import { TeamMemberService } from 'src/app/servicies/team-member.service';
             placeholder = "Enter name">
           </ion-input>
         </ion-col>
+        <!---------------------------- Surname input ---------------------------->
         <ion-col>
           <ion-input 
             formControlName = "surname"
@@ -69,6 +60,20 @@ import { TeamMemberService } from 'src/app/servicies/team-member.service';
   `,
   styleUrl: './team-member-form.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    IonGrid,
+    IonRow,
+    IonCol,
+    IonInput,
+    IonSelect,
+    IonSelectOption,
+    IonItem,
+    IonButton,
+    TeamProfilePhotoComponent
+  ]
 })
 export class TeamMemberFormComponent {
   private teamMemberService = inject(TeamMemberService);
@@ -85,18 +90,22 @@ export class TeamMemberFormComponent {
     return !this.teamMemberForm.valid;
   }
 
-  submit(){
+  submit() {
     const teamMember: TeamMember = {
       id: this.teamMemberService.teamMembers().length + 1,
       name: this.teamMemberForm.value.name!,
-      surname:  this.teamMemberForm.value.surname!,
+      surname: this.teamMemberForm.value.surname!,
       totalHoursTaught: 0,
       hoursTaughtThisMonth: 0,
-      subject: [ this.teamMemberForm.value.subject!],
-      profilePic:  this.teamMemberForm.value.profilePicture!
+      subject: [this.teamMemberForm.value.subject!],
+      profilePic: this.teamMemberForm.value.profilePicture!
     }
 
     this.teamMemberService.teamMembers.set([...this.teamMemberService.teamMembers(), teamMember]);
     this.modalCtrl.dismiss(teamMember, 'confirm');
   }
- }
+
+  handleProfilePicture(photo: string) {
+    this.teamMemberForm.controls.profilePicture.setValue(photo);
+  }
+}
