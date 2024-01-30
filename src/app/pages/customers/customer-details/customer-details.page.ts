@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Input, OnInit, inject } from '@angular/core';
-import { IonAlert, IonBackButton, IonButton, IonButtons, IonCard, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonRow, IonTitle, IonToolbar } from '@ionic/angular/standalone';
+import { IonAlert, IonBackButton, IonButton, IonButtons, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonRow, IonTitle, IonToolbar } from '@ionic/angular/standalone';
 import { CustomerFormComponent } from "../customer-components/customer-form/customer-form.component";
 import { CustomerService } from 'src/app/servicies/customer.service';
 import { Customer } from 'src/app/models/customer.model';
@@ -46,26 +46,27 @@ import { Customer } from 'src/app/models/customer.model';
   <ion-content>
     <app-customer-form [customerForDisplay]="customerForDisplay"></app-customer-form>
     <ion-card>
-      <ion-item >
-        <ion-label>
-          <h1>My bill</h1>
-        </ion-label>
-      </ion-item>
-      <ion-list>
-        <ion-grid>
-          <ion-row>
-            <ion-col size="4">Lesson</ion-col>
-            <ion-col size="4">Teacher</ion-col>
-            <ion-col size="2">Hours</ion-col>
-            <ion-col size="2">Cost</ion-col>
-          </ion-row>
-          <ion-row style="border-top: 1px solid;">
-            <ion-col size="10">Total cost:</ion-col>
-            <ion-col size="2">Cost</ion-col>
-          </ion-row>
-        </ion-grid>
-      </ion-list>
+      <ion-card-header>
+        <ion-card-title>My Bill</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-list>
+          <ion-grid>
+            <ion-row>
+              <ion-col size="4">Lesson</ion-col>
+              <ion-col size="4">Teacher</ion-col>
+              <ion-col size="2">Hours</ion-col>
+              <ion-col size="2">Cost</ion-col>
+            </ion-row>
+            <ion-row style="border-top: 1px solid;">
+              <ion-col size="10">Total cost:</ion-col>
+              <ion-col size="2">Cost</ion-col>
+            </ion-row>
+          </ion-grid>
+        </ion-list>
+      </ion-card-content>
     </ion-card>
+    <ion-item></ion-item>
   </ion-content>
 `,
   styleUrl: './customer-details.page.css',
@@ -88,6 +89,9 @@ import { Customer } from 'src/app/models/customer.model';
     IonLabel,
     IonRow,
     IonCol,
+    IonCardHeader,
+    IonCardTitle,
+    IonCardContent,
     CustomerFormComponent
   ]
 })

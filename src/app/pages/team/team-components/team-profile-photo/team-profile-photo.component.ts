@@ -52,6 +52,5 @@ export class TeamProfilePhotoComponent implements OnInit {
     }, (err) => {
       alert(err);
     });
-    console.log(this.profilePicture)
   }
 }

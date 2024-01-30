@@ -11,5 +11,6 @@ export interface Customer {
   insurance: string,
   departureDate: string,
   terms?: boolean,
-  paid: boolean
+  paid: boolean,
+  attachedTeacher?: number
 }

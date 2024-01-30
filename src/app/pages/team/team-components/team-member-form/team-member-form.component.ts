@@ -79,6 +79,8 @@ export class TeamMemberFormComponent {
   private teamMemberService = inject(TeamMemberService);
   private modalCtrl = inject(ModalController);
 
+  private defaultProfilePicture = 'https://ionicframework.com/docs/img/demos/avatar.svg';
+
   teamMemberForm = new FormGroup({
     profilePicture: new FormControl(''),
     name: new FormControl('', Validators.required),
@@ -98,7 +100,7 @@ export class TeamMemberFormComponent {
       totalHoursTaught: 0,
       hoursTaughtThisMonth: 0,
       subject: [this.teamMemberForm.value.subject!],
-      profilePic: this.teamMemberForm.value.profilePicture!
+      profilePic: (this.teamMemberForm.value.profilePicture?.length! > 0) ? this.teamMemberForm.value.profilePicture! : this.defaultProfilePicture
     }
 
     this.teamMemberService.teamMembers.set([...this.teamMemberService.teamMembers(), teamMember]);
