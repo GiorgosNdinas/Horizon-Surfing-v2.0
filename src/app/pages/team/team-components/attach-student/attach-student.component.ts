@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Input, computed, inject, signal } from '@angular/core';
 import { IonSearchbar, IonList, IonGrid, IonRow, IonCol, IonItem, IonButton, IonIcon, IonAlert, AlertController, ModalController } from '@ionic/angular/standalone';
 import { Customer } from 'src/app/models/customer.model';

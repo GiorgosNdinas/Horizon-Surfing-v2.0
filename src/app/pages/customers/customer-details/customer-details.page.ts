@@ -4,6 +4,7 @@ import { IonAlert, IonBackButton, IonButton, IonButtons, IonCard, IonCardContent
 import { CustomerFormComponent } from "../customer-components/customer-form/customer-form.component";
 import { CustomerService } from 'src/app/servicies/customer.service';
 import { Customer } from 'src/app/models/customer.model';
+import { LessonsService } from 'src/app/servicies/lessons.service';
 
 @Component({
   selector: 'app-customer-details',
@@ -52,16 +53,20 @@ import { Customer } from 'src/app/models/customer.model';
       <ion-card-content>
         <ion-list>
           <ion-grid>
-            <ion-row>
+            <ion-row style="border-bottom: 1px solid;">
               <ion-col size="4">Lesson</ion-col>
-              <ion-col size="4">Teacher</ion-col>
-              <ion-col size="2">Hours</ion-col>
-              <ion-col size="2">Cost</ion-col>
+              <ion-col size="4">Date</ion-col>
+              <ion-col size="2">Type</ion-col>
+              <ion-col size="2">Hour</ion-col>
             </ion-row>
-            <ion-row style="border-top: 1px solid;">
-              <ion-col size="10">Total cost:</ion-col>
-              <ion-col size="2">Cost</ion-col>
-            </ion-row>
+            @for(lesson of this.lessonsService.getLessonsForCustomer(this.customerForDisplay.id); track $index){
+              <ion-row>
+                <ion-col size="4">{{this.customerForDisplay.activity}}</ion-col>
+                <ion-col size="4">{{lesson.lessonDate}}</ion-col>
+                <ion-col size="2">{{lesson.lessonType}}</ion-col>
+                <ion-col size="2">{{lesson.lessonHours}}</ion-col>
+              </ion-row>
+            }
           </ion-grid>
         </ion-list>
       </ion-card-content>
@@ -99,6 +104,7 @@ export class CustomerDetailsPage implements OnInit {
   @Input() id!: number;
   customerForDisplay!: Customer;
   customerService = inject(CustomerService);
+  lessonsService = inject(LessonsService);
 
   public alertButtons = [
     {
