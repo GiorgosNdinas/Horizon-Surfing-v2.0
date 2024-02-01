@@ -6,11 +6,12 @@ import { TeamMember } from 'src/app/models/team-members.modal';
 import { TeamMemberService } from 'src/app/servicies/team-member.service';
 import { AttachStudentComponent } from "../team-components/attach-student/attach-student.component";
 import { MyStudentsComponent } from "../team-components/my-students/my-students.component";
+import { CustomerService } from 'src/app/servicies/customer.service';
 
 @Component({
-    selector: 'app-team-member-students',
-    standalone: true,
-    template: `
+  selector: 'app-team-member-students',
+  standalone: true,
+  template: `
     <ion-card>
       <ion-card-header>
         <ion-card-title>My students</ion-card-title>
@@ -41,7 +42,7 @@ import { MyStudentsComponent } from "../team-components/my-students/my-students.
       </ion-card-content>
     </ion-card>
   `,
-    styles: `
+  styles: `
     ion-card-header{
       display: flex;
       flex-direction: row;
@@ -49,27 +50,28 @@ import { MyStudentsComponent } from "../team-components/my-students/my-students.
       align-items: center;
     }
   `,
-    imports: [
-        IonCard,
-        IonCardHeader,
-        IonCardTitle,
-        IonCardContent,
-        IonButtons,
-        IonButton,
-        IonIcon,
-        IonModal,
-        IonHeader,
-        IonToolbar,
-        IonTitle,
-        IonContent,
-        AttachStudentComponent,
-        MyStudentsComponent
-    ]
+  imports: [
+    IonCard,
+    IonCardHeader,
+    IonCardTitle,
+    IonCardContent,
+    IonButtons,
+    IonButton,
+    IonIcon,
+    IonModal,
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonContent,
+    AttachStudentComponent,
+    MyStudentsComponent
+  ]
 })
 export class TeamMemberStudentsComponent {
   @Input() id: number | undefined;
   @Input() teamMember: TeamMember | undefined;
   @ViewChild(IonModal) modal!: IonModal;
+  customerService = inject(CustomerService);
 
   // Close the customer modal with a 'cancel' action
   cancel() {
@@ -90,6 +92,13 @@ export class TeamMemberStudentsComponent {
     // Check if the dismissal role is 'confirm'
     if (ev.detail.role === 'confirm') {
       console.log('Closed with confirm', ev.detail.data);
+      let index = this.customerService.customers().indexOf(data);
+
+      if (index !== -1) {
+        this.customerService.customers()[index].attachedTeacher = this.teamMember?.id;
+      } else {
+        console.log('Object not found in the array');
+      }
     }
   }
 }

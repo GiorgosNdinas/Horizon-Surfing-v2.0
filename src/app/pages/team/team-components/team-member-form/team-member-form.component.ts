@@ -45,7 +45,8 @@ import { TeamProfilePhotoComponent } from "../team-profile-photo/team-profile-ph
               formControlName ="subject" 
               errorText="Activity is required."
               label="Select activity*" 
-              label-placement="floating">
+              label-placement="floating"
+              [multiple]="true">
               <ion-select-option value="Windsurfing">Windsurfing</ion-select-option>
               <ion-select-option value="Kitesurfing">Kitesurfing</ion-select-option>
               <ion-select-option value="Catamaran">Catamaran</ion-select-option>
@@ -99,7 +100,7 @@ export class TeamMemberFormComponent {
       surname: this.teamMemberForm.value.surname!,
       totalHoursTaught: 0,
       hoursTaughtThisMonth: 0,
-      subject: [this.teamMemberForm.value.subject!],
+      subject: [...this.teamMemberForm.value.subject!],
       profilePic: (this.teamMemberForm.value.profilePicture?.length! > 0) ? this.teamMemberForm.value.profilePicture! : this.defaultProfilePicture
     }
 

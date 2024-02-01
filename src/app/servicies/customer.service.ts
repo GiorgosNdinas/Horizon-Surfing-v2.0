@@ -39,7 +39,8 @@ export class CustomerService {
         insurance: "2 weeks",
         departureDate: "2024-06-01",
         paid: false,
-        terms: true
+        terms: true,
+        attachedTeacher: 1
       },
       {
         id: 3,
@@ -99,7 +100,8 @@ export class CustomerService {
         insurance: "1 week",
         departureDate: "2024-10-12",
         paid: false,
-        terms: true
+        terms: true,
+        attachedTeacher: 1
       },
       {
         id: 7,
@@ -144,7 +146,8 @@ export class CustomerService {
         insurance: "1 week",
         departureDate: "2025-01-08",
         paid: false,
-        terms: true
+        terms: true,
+        attachedTeacher: 2
       },
       {
         id: 10,

@@ -81,16 +81,8 @@ export class AttachStudentComponent {
 
   attachStudentToTeamMember(ev: any, student: Customer) {
     if (ev.detail.role === "confirm") {
-      let index = this.customerService.customers().indexOf(student);
-
-      if (index !== -1) {
-        console.log(`Index of the object: ${index}`);
-        this.customerService.customers()[index].attachedTeacher = this.teamMember?.id;
-        this.customerService.searchCustomers.set(this.customerService.customers());
-        this.modalController.dismiss(student, 'confirm');
-      } else {
-        console.log('Object not found in the array');
-      }
+      return this.modalController.dismiss(student, 'confirm');      
     }
+    return
   }
 }
