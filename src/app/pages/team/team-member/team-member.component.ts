@@ -4,8 +4,8 @@ import { Router } from '@angular/router';
 import { IonAvatar, IonBackButton, IonButton, IonButtons, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonCol, IonContent, IonHeader, IonIcon, IonItem, IonModal, IonRow, IonTitle, IonToolbar } from '@ionic/angular/standalone';
 import { TeamMember } from 'src/app/models/team-members.modal';
 import { TeamMemberService } from 'src/app/servicies/team-member.service';
-import { AttachStudentComponent } from "../team-components/attach-student/attach-student.component";
-import { MyStudentsComponent } from "../team-components/my-students/my-students.component";
+import { AttachStudentComponent } from "../team-components/team-member-attach-student/attach-student.component";
+import { MyStudentsComponent } from "../team-components/team-memeber-my-students/my-students.component";
 import { CustomerService } from 'src/app/servicies/customer.service';
 
 @Component({
