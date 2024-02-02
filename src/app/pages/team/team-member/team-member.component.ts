@@ -1,12 +1,13 @@
 import { OverlayEventDetail } from '@ionic/core/components';
 import { ChangeDetectionStrategy, Component, Input, OnInit, ViewChild, inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { IonAvatar, IonBackButton, IonButton, IonButtons, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonCol, IonContent, IonHeader, IonIcon, IonItem, IonModal, IonRow, IonTitle, IonToolbar } from '@ionic/angular/standalone';
+import { IonAlert, IonAvatar, IonBackButton, IonButton, IonButtons, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonCol, IonContent, IonHeader, IonIcon, IonItem, IonModal, IonRow, IonTitle, IonToolbar } from '@ionic/angular/standalone';
 import { TeamMember } from 'src/app/models/team-members.modal';
 import { TeamMemberService } from 'src/app/servicies/team-member.service';
 import { AttachStudentComponent } from "../team-components/team-member-attach-student/attach-student.component";
 import { MyStudentsComponent } from "../team-components/team-memeber-my-students/my-students.component";
 import { CustomerService } from 'src/app/servicies/customer.service';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-team-member-students',
@@ -118,7 +119,10 @@ export class TeamMemberStudentsComponent {
     IonRow,
     IonCol,
     IonAvatar,
-    IonItem
+    IonItem,
+    IonButton,
+    IonIcon,
+    IonAlert
   ],
   template: ` 
   <ion-header>
@@ -133,14 +137,14 @@ export class TeamMemberStudentsComponent {
     @if(teamMember){
       <ion-card>
         <ion-row>
-          <ion-col size="3">
+          <ion-col size="4">
             <ion-avatar aria-hidden="true">
               <img  [src]="teamMember.profilePic" />
             </ion-avatar>
           </ion-col>
-          <ion-col size="9">
+          <ion-col size="8">
             <ion-item lines="none">
-              <h1>{{teamMember.name}} {{teamMember.surname}}</h1>
+              <h1 style="text-align: center">{{teamMember.name}} {{teamMember.surname}}</h1>
             </ion-item>
             <ion-item lines="none">
               <h4>{{teamMember.subject}}</h4>
@@ -148,8 +152,19 @@ export class TeamMemberStudentsComponent {
           </ion-col>
         </ion-row>
         <ion-row>
-          <ion-col size="3"></ion-col>
-          <ion-col size="9">
+          <ion-col size="4" style="text-align: center;">
+            <ion-button id="show-delete-alert" fill="outline" color="danger" size="small">
+              <ion-icon slot="start" name="trash-outline"></ion-icon>  
+              Delete
+            </ion-button>
+            <ion-alert
+              trigger="show-delete-alert"
+              header="Are you sure you want to delete this team member?"
+              [buttons]="alertButtons"
+              (didDismiss)="deleteTeamMember($event)"
+            ></ion-alert>
+          </ion-col>
+          <ion-col size="8">
             <ion-item lines="none">
               <label>Hours this month: {{teamMember.hoursTaughtThisMonth}}</label>
             </ion-item>
@@ -185,9 +200,20 @@ export class TeamMemberComponent implements OnInit {
   @Input() id: number | undefined;
   teamMember: TeamMember | undefined;
 
-  // TODO: Change the service
+  public alertButtons = [
+    {
+      text: 'Cancel',
+      role: 'cancel',
+    },
+    {
+      text: 'Confirm',
+      role: 'confirm',
+    },
+  ];
+
   public teamMemberService = inject(TeamMemberService);
   public router = inject(Router)
+  private _location = inject(Location);
 
   ngOnInit(): void {
     this.findTeamMember()
@@ -197,5 +223,13 @@ export class TeamMemberComponent implements OnInit {
     const index = this.teamMemberService.teamMembers().findIndex(item => item.id == this.id)
     if (index !== -1)
       this.teamMember = this.teamMemberService.teamMembers()[index];
+  }
+
+  deleteTeamMember(ev: any) {
+    if (ev.detail.role === "confirm") {   
+      this.teamMemberService.teamMembers.set(this.teamMemberService.teamMembers().filter(item => item.id !== this.teamMember?.id));
+      this._location.back();
+    }
+    return
   }
 }

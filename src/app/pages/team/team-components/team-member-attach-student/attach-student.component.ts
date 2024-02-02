@@ -36,7 +36,7 @@ import { CustomerService } from 'src/app/servicies/customer.service';
           </ion-row>
           <ion-alert
             [trigger]="student.id"
-            header="Are you sure you want to attach this studen?"
+            header="Are you sure you want to attach this student?"
             [buttons]="alertButtons"
             (didDismiss)="attachStudentToTeamMember($event, student)"
           ></ion-alert>
