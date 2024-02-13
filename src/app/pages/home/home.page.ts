@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { IonButton, IonContent, IonImg, IonItem, IonLabel } from '@ionic/angular/standalone';
 import { CustomerService } from 'src/app/servicies/customer.service';
 import { LoadFilesService } from 'src/app/servicies/load-files.service';
+import { TeamMemberService } from 'src/app/servicies/team-member.service';
 
 @Component({
   selector: 'app-home',
@@ -30,10 +31,10 @@ import { LoadFilesService } from 'src/app/servicies/load-files.service';
 })
 export class HomePage {
   // Router injection
-  private router = inject(Router);
 
-  constructor(private customerService: CustomerService, private loadFilesService: LoadFilesService){
+  constructor(private router: Router, private customerService: CustomerService,private teamMemberService: TeamMemberService, private loadFilesService: LoadFilesService){
     this.customerService.getCustomers();
+    this.teamMemberService.getTeamMembers();
     this.loadFilesService.loadFiles();
   }
 

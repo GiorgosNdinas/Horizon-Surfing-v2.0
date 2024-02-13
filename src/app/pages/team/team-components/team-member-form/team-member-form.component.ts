@@ -97,7 +97,6 @@ export class TeamMemberFormComponent {
 
   submit() {
     const teamMember: TeamMember = {
-      id: this.teamMemberService.teamMembers().length + 1,
       name: this.teamMemberForm.value.name!,
       surname: this.teamMemberForm.value.surname!,
       totalHoursTaught: 0,
@@ -108,7 +107,8 @@ export class TeamMemberFormComponent {
 
     console.log(teamMember.profilePic);
     
-    this.teamMemberService.teamMembers.set([...this.teamMemberService.teamMembers(), teamMember]);
+    this.teamMemberService.addTeamMember(teamMember);
+    // this.teamMemberService.dbTeamMembers.set([...this.teamMemberService.dbTeamMembers(), teamMember]);
     this.modalCtrl.dismiss(teamMember, 'confirm');
   }
 

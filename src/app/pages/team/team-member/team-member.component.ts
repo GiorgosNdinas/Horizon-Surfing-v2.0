@@ -225,14 +225,15 @@ export class TeamMemberComponent implements OnInit {
   }
 
   findTeamMember() {
-    const index = this.teamMemberService.teamMembers().findIndex(item => item.id == this.id)
+    const index = this.teamMemberService.dbTeamMembers().findIndex(item => item.id == this.id)
     if (index !== -1)
-      this.teamMember = this.teamMemberService.teamMembers()[index];
+      this.teamMember = this.teamMemberService.dbTeamMembers()[index];
   }
 
   deleteTeamMember(ev: any) {
-    if (ev.detail.role === "confirm") {   
-      this.teamMemberService.teamMembers.set(this.teamMemberService.teamMembers().filter(item => item.id !== this.teamMember?.id));
+    if (ev.detail.role === "confirm") {  
+      this.teamMemberService.deleteTeamMember(this.teamMember!); 
+      // this.teamMemberService.dbTeamMembers.set(this.teamMemberService.dbTeamMembers().filter(item => item.id !== this.teamMember?.id));
       this._location.back();
     }
     return

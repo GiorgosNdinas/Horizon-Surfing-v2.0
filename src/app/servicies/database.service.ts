@@ -33,7 +33,8 @@ export class DatabaseService {
       totalHoursTaught INTEGER,
       hoursTaughtThisMonth INTEGER,
       subject TEXT NOT NULL,
-      profilePic TEXT NOT NULL
+      profilePic TEXT NOT NULL,
+      deleted INTEGER DEFAULT 0
     );
     `;
 

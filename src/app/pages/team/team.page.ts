@@ -22,7 +22,7 @@ import { LoadFilesService } from 'src/app/servicies/load-files.service';
     <ion-content>
       <ion-grid>
         <div class="grid-container">
-          @for(teamMember of this.teamMemberService.teamMembers(); track $index){
+          @for(teamMember of this.teamMemberService.dbTeamMembers(); track $index){
             <ion-card [routerLink]="[teamMember.id]">
               <ion-row>
                 <ion-col size="3">

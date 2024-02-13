@@ -50,21 +50,6 @@ export class TeamProfilePhotoComponent implements OnInit {
     Camera.requestPermissions({ permissions: ['photos'] });
     this.loadFilesService.loadFiles();
   }
-
-  // pickImageFromGallery() {
-  //   const options: ImageOptions = {
-  //     source: CameraSource.Photos,
-  //     resultType: CameraResultType.DataUrl
-  //   }
-  //   Camera.getPhoto(options).then((result) => {
-  //     this.defaultPicture = result.dataUrl!;
-  //     this.profilePicture.emit(result.dataUrl!);
-      
-  //   }, (err) => {
-  //     alert(err);
-  //   });
-  // }
-
   async selectImage() {
     const image = await Camera.getPhoto({
       quality: 90,
