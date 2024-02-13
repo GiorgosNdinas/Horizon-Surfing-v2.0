@@ -1,7 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, EventEmitter, OnInit, Output } from '@angular/core';
-import { IonButton, IonCard, IonCardContent, IonIcon, IonImg, IonTitle } from '@ionic/angular/standalone';
-import { Camera, CameraResultType, CameraSource, ImageOptions } from "@capacitor/camera"
+import { IonButton, IonCard, IonCardContent, IonIcon, IonImg, IonTitle, Platform } from '@ionic/angular/standalone';
+import { Camera, CameraResultType, CameraSource, ImageOptions, Photo } from "@capacitor/camera"
+import { LoadFilesService } from 'src/app/servicies/load-files.service';
+import { Directory, Filesystem } from '@capacitor/filesystem';
+
+const IMAGE_DIR = 'stored-images';
+
+
 
 @Component({
   selector: 'app-team-profile-photo',
@@ -19,7 +25,7 @@ import { Camera, CameraResultType, CameraSource, ImageOptions } from "@capacitor
   <ion-title>
     Profile picture
   </ion-title>
-  <ion-card (click) = "pickImageFromGallery()">
+  <ion-card (click) = "selectImage()">
     <ion-card-content>
       <ion-img [src]="defaultPicture"></ion-img>
       <ion-button fill="clear" color="light">
@@ -35,22 +41,67 @@ export class TeamProfilePhotoComponent implements OnInit {
 
   @Output() profilePicture = new EventEmitter<string>();
 
-  defaultPicture = "https://ionicframework.com/docs/img/demos/avatar.svg";
+  defaultPicture: string = "https://ionicframework.com/docs/img/demos/avatar.svg";
+
+  constructor(private platform: Platform, private loadFilesService: LoadFilesService){
+  }
 
   ngOnInit(): void {
     Camera.requestPermissions({ permissions: ['photos'] });
+    this.loadFilesService.loadFiles();
   }
 
-  pickImageFromGallery() {
-    const options: ImageOptions = {
-      source: CameraSource.Photos,
-      resultType: CameraResultType.DataUrl
-    }
-    Camera.getPhoto(options).then((result) => {
-      this.defaultPicture = result.dataUrl!;
-      this.profilePicture.emit(result.dataUrl!);
-    }, (err) => {
-      alert(err);
+  // pickImageFromGallery() {
+  //   const options: ImageOptions = {
+  //     source: CameraSource.Photos,
+  //     resultType: CameraResultType.DataUrl
+  //   }
+  //   Camera.getPhoto(options).then((result) => {
+  //     this.defaultPicture = result.dataUrl!;
+  //     this.profilePicture.emit(result.dataUrl!);
+      
+  //   }, (err) => {
+  //     alert(err);
+  //   });
+  // }
+
+  async selectImage() {
+    const image = await Camera.getPhoto({
+      quality: 90,
+      allowEditing: false,
+      resultType: CameraResultType.Uri,
+      source: CameraSource.Photos
     });
+
+    if (image) {
+      console.log('-----------', image.webPath);
+      
+      this.defaultPicture = image.webPath!;
+      this.saveImage(image);
+    }
+  }
+
+  async saveImage(photo: Photo) {
+    const base64 = await this.readAsBase64(photo);
+
+    const fileName = new Date().getTime() + '.jpeg';
+    const savedFile = await Filesystem.writeFile({
+      directory: Directory.Data,
+      path: `${IMAGE_DIR}/${fileName}`,
+      data: base64!
+    });
+    this.profilePicture.emit(fileName);
+    this.loadFilesService.loadFiles();
+  }
+
+  async readAsBase64(photo: Photo) {
+    if(this.platform.is('hybrid')){
+      const file = await Filesystem.readFile({
+        path: photo.path!
+      });
+
+      return file.data;
+    }
+    return;
   }
 }

@@ -13,7 +13,7 @@ export class TeamMemberService {
       surname: "Amoroso",
       totalHoursTaught: 500,
       hoursTaughtThisMonth: 20,
-      subject: ["Kitesurfing", "Catamaran"],
+      subject: "Kitesurfing",
       profilePic: "assets/profiles/Peppe-profile.png"
     },
     {
@@ -22,7 +22,7 @@ export class TeamMemberService {
       surname: "Smith",
       totalHoursTaught: 350,
       hoursTaughtThisMonth: 15,
-      subject: ["Windsurfing"],
+      subject: "Windsurfing",
       profilePic: "assets/profiles/Jana-profile.png"
     },
     {
@@ -31,7 +31,7 @@ export class TeamMemberService {
       surname: "Johnson",
       totalHoursTaught: 200,
       hoursTaughtThisMonth: 10,
-      subject: ["Wingfoiling"],
+      subject: "Wingfoiling",
       profilePic: "assets/profiles/Alex-profile.png"
     },
     {
@@ -40,7 +40,7 @@ export class TeamMemberService {
       surname: "Williams",
       totalHoursTaught: 600,
       hoursTaughtThisMonth: 25,
-      subject: ["Catamaran"],
+      subject: "Catamaran",
       profilePic: "assets/profiles/Emily-profile.png"
     },
   ]);

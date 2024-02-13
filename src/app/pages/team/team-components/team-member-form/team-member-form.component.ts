@@ -5,6 +5,7 @@ import { IonButton, IonCol, IonGrid, IonInput, IonItem, IonRow, IonSelect, IonSe
 import { TeamMember } from 'src/app/models/team-members.modal';
 import { TeamMemberService } from 'src/app/servicies/team-member.service';
 import { TeamProfilePhotoComponent } from "../team-profile-photo/team-profile-photo.component";
+import { DatabaseService } from 'src/app/servicies/database.service';
 
 @Component({
   selector: 'app-team-member-form',
@@ -46,7 +47,7 @@ import { TeamProfilePhotoComponent } from "../team-profile-photo/team-profile-ph
               errorText="Activity is required."
               label="Select activity*" 
               label-placement="floating"
-              [multiple]="true">
+              [multiple]="false">
               <ion-select-option value="Windsurfing">Windsurfing</ion-select-option>
               <ion-select-option value="Kitesurfing">Kitesurfing</ion-select-option>
               <ion-select-option value="Catamaran">Catamaran</ion-select-option>
@@ -79,6 +80,7 @@ import { TeamProfilePhotoComponent } from "../team-profile-photo/team-profile-ph
 export class TeamMemberFormComponent {
   private teamMemberService = inject(TeamMemberService);
   private modalCtrl = inject(ModalController);
+  private databaseService = inject(DatabaseService);
 
   private defaultProfilePicture = 'https://ionicframework.com/docs/img/demos/avatar.svg';
 
@@ -100,10 +102,12 @@ export class TeamMemberFormComponent {
       surname: this.teamMemberForm.value.surname!,
       totalHoursTaught: 0,
       hoursTaughtThisMonth: 0,
-      subject: [...this.teamMemberForm.value.subject!],
+      subject: this.teamMemberForm.value.subject!,
       profilePic: (this.teamMemberForm.value.profilePicture?.length! > 0) ? this.teamMemberForm.value.profilePicture! : this.defaultProfilePicture
     }
 
+    console.log(teamMember.profilePic);
+    
     this.teamMemberService.teamMembers.set([...this.teamMemberService.teamMembers(), teamMember]);
     this.modalCtrl.dismiss(teamMember, 'confirm');
   }

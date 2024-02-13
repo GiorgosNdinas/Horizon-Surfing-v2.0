@@ -4,6 +4,8 @@ import { IonAvatar, IonBackButton, IonButton, IonButtons, IonCard, IonCol, IonCo
 import { TeamMemberFormComponent } from "./team-components/team-member-form/team-member-form.component";
 import { OverlayEventDetail } from '@ionic/core/components';
 import { TeamMemberService } from 'src/app/servicies/team-member.service';
+import { TeamMember } from 'src/app/models/team-members.modal';
+import { LoadFilesService } from 'src/app/servicies/load-files.service';
 
 @Component({
     selector: 'app-team',
@@ -25,7 +27,7 @@ import { TeamMemberService } from 'src/app/servicies/team-member.service';
               <ion-row>
                 <ion-col size="3">
                   <ion-avatar aria-hidden="true">
-                    <img  [src]="teamMember.profilePic" />
+                    <img  [src]="getProfilePic(teamMember)" />
                   </ion-avatar>
                 </ion-col>
                 <ion-col size="9">
@@ -122,7 +124,7 @@ import { TeamMemberService } from 'src/app/servicies/team-member.service';
 export class TeamPage {
   @ViewChild(IonModal) modal!: IonModal;
   
-  constructor(public teamMemberService: TeamMemberService) { }
+  constructor(public teamMemberService: TeamMemberService, private loadFilesService: LoadFilesService) { }
 
   // Close the customer modal with a 'cancel' action
   cancel() {
@@ -144,6 +146,16 @@ export class TeamPage {
     // Check if the dismissal role is 'confirm'
     if (ev.detail.role === 'confirm') {
       console.log('Closed with confirm');
+    }
+  }
+
+  getProfilePic(teamMember: TeamMember){
+    const index = this.loadFilesService.images.findIndex(image => image.name === teamMember.profilePic);
+
+    if (index !== -1){
+      return this.loadFilesService.images[index].data;
+    }else{
+      return "https://ionicframework.com/docs/img/demos/avatar.svg";
     }
   }
 }

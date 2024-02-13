@@ -1,9 +1,9 @@
 export interface TeamMember {
-  id: number
+  id?: number
   name: string,
   surname: string,
   totalHoursTaught: number,
   hoursTaughtThisMonth: number,
-  subject: string[],
+  subject: string,
   profilePic: string
 }

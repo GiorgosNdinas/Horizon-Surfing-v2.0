@@ -1,5 +1,5 @@
 export interface Customer {
-  id: number
+  id?: number
   name: string,
   surname: string,
   homeAddress: string,
@@ -10,7 +10,7 @@ export interface Customer {
   activityType: string,
   insurance: string,
   departureDate: string,
-  terms?: boolean,
-  paid: boolean,
+  terms?: number,
+  paid: number,
   attachedTeacher?: number
 }

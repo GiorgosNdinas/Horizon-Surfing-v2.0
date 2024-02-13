@@ -8,6 +8,8 @@ import { AttachStudentComponent } from "../team-components/team-member-attach-st
 import { MyStudentsComponent } from "../team-components/team-memeber-my-students/my-students.component";
 import { CustomerService } from 'src/app/servicies/customer.service';
 import { Location } from '@angular/common';
+import { Customer } from 'src/app/models/customer.model';
+import { LoadFilesService } from 'src/app/servicies/load-files.service';
 
 @Component({
   selector: 'app-team-member-students',
@@ -93,10 +95,12 @@ export class TeamMemberStudentsComponent {
     // Check if the dismissal role is 'confirm'
     if (ev.detail.role === 'confirm') {
       console.log('Closed with confirm', ev.detail.data);
-      let index = this.customerService.customers().indexOf(data);
+      let index = this.customerService.dbCustomers().indexOf(data);
 
       if (index !== -1) {
-        this.customerService.customers()[index].attachedTeacher = this.teamMember?.id;
+        const customer: Customer = this.customerService.dbCustomers()[index];
+        customer.attachedTeacher = this.teamMember?.id;
+        this.customerService.updateCustomer(customer);
       } else {
         console.log('Object not found in the array');
       }
@@ -139,7 +143,7 @@ export class TeamMemberStudentsComponent {
         <ion-row>
           <ion-col size="4">
             <ion-avatar aria-hidden="true">
-              <img  [src]="teamMember.profilePic" />
+              <img  [src]="getProfilePic()" />
             </ion-avatar>
           </ion-col>
           <ion-col size="8">
@@ -212,6 +216,7 @@ export class TeamMemberComponent implements OnInit {
   ];
 
   public teamMemberService = inject(TeamMemberService);
+  private loadFilesService = inject(LoadFilesService);
   public router = inject(Router)
   private _location = inject(Location);
 
@@ -231,5 +236,16 @@ export class TeamMemberComponent implements OnInit {
       this._location.back();
     }
     return
+  }
+
+  getProfilePic(){
+    const index = this.loadFilesService.images.findIndex(image => image.name === this.teamMember?.profilePic);
+
+    if (index !== -1){
+      return this.loadFilesService.images[index].data;
+    }else{
+      return "https://ionicframework.com/docs/img/demos/avatar.svg"
+    }
+    
   }
 }

@@ -59,7 +59,7 @@ import { LessonsService } from 'src/app/servicies/lessons.service';
               <ion-col size="2">Type</ion-col>
               <ion-col size="2">Hour</ion-col>
             </ion-row>
-            @for(lesson of this.lessonsService.getLessonsForCustomer(this.customerForDisplay.id); track $index){
+            @for(lesson of this.lessonsService.getLessonsForCustomer(this.customerForDisplay.id!); track $index){
               <ion-row>
                 <ion-col size="4">{{this.customerForDisplay.activity}}</ion-col>
                 <ion-col size="4">{{lesson.lessonDate}}</ion-col>
@@ -118,15 +118,13 @@ export class CustomerDetailsPage implements OnInit {
   ];
 
   ngOnInit(): void {
-    this.customerForDisplay = this.customerService.customers()[this.id - 1];
+    this.customerForDisplay = this.customerService.dbCustomers()[this.id - 1];
   }
 
   updateCustomerPayment(ev: any) {
     if (ev.detail.role === "confirm") {
-      this.customerForDisplay.paid = !this.customerForDisplay.paid;
-      // this.updateCustomerDetails();
-      // TODO: Update customer list
-      this.customerService.customers()[this.id - 1] = this.customerForDisplay;
+      this.customerForDisplay.paid = (this.customerForDisplay.paid == 0)? 1 : 0;
+      this.customerService.updateCustomer(this.customerForDisplay);
     }
   }
 }

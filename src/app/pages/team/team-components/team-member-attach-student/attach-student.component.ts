@@ -53,12 +53,8 @@ export class AttachStudentComponent {
   modalController = inject(ModalController);
 
   studentsForDisplay = computed<Customer[]>(() => {
-    return this.customerService.searchCustomers().filter(customer => {
-      if (this.teamMember?.subject.length! > 1) {
-        return customer.activityType === "Lesson" && customer.attachedTeacher == undefined;
-      }
-      else
-        return customer.activity === this.teamMember?.subject[0] && customer.activityType === "Lesson" && customer.attachedTeacher == undefined;
+    return this.customerService.dbSearchCustomers().filter(customer => {
+      return customer.activity === this.teamMember?.subject && customer.activityType === "Lesson" && customer.attachedTeacher == 0;        
     });
   });
 
@@ -76,7 +72,7 @@ export class AttachStudentComponent {
   // Search input habdler
   handleSearchInput(event: any) {
     const query = event.target.value.toLowerCase();
-    this.customerService.searchCustomers.set(this.customerService.customers().filter((d) => d.name.toLowerCase().indexOf(query) > -1));
+    this.customerService.dbSearchCustomers.set(this.customerService.dbCustomers().filter((d) => d.name.toLowerCase().indexOf(query) > -1));
   }
 
   attachStudentToTeamMember(ev: any, student: Customer) {

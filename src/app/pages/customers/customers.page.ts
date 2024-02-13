@@ -53,7 +53,10 @@ import { CustomerService } from 'src/app/servicies/customer.service';
 })
 export class CustomersPage {
   @ViewChild(IonModal) modal!: IonModal;
-  private customerService = inject(CustomerService);
+  
+  constructor(private customerService: CustomerService){
+    this.customerService.getCustomers();
+  }
 
   // Close the customer modal with a 'cancel' action
   cancel() {

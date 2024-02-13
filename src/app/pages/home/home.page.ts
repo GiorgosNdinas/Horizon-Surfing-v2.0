@@ -1,6 +1,8 @@
 import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { IonButton, IonContent, IonImg, IonItem, IonLabel } from '@ionic/angular/standalone';
+import { CustomerService } from 'src/app/servicies/customer.service';
+import { LoadFilesService } from 'src/app/servicies/load-files.service';
 
 @Component({
   selector: 'app-home',
@@ -29,6 +31,13 @@ import { IonButton, IonContent, IonImg, IonItem, IonLabel } from '@ionic/angular
 export class HomePage {
   // Router injection
   private router = inject(Router);
+
+  constructor(private customerService: CustomerService, private loadFilesService: LoadFilesService){
+    this.customerService.getCustomers();
+    this.loadFilesService.loadFiles();
+  }
+
+  customers = this.customerService.dbCustomers();
 
   // Function to navigate depending on wich button is pressed
   navigateToPage(page: string) {

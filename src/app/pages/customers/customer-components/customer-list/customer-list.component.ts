@@ -57,12 +57,12 @@ export class CustomerListComponent {
 
   // Signal that displays the customers
   customersForDisplay = computed<Customer[]>(() => {
-    return this.customerService.searchCustomers();
+    return this.customerService.dbSearchCustomers();
   });
 
   // Search input handler
   handleSearchInput(event: any) {
     const query = event.target.value.toLowerCase();
-    this.customerService.searchCustomers.set(this.customerService.customers().filter((d) => d.name.toLowerCase().indexOf(query) > -1));
+    this.customerService.dbSearchCustomers.set(this.customerService.dbCustomers().filter((d) => d.name.toLowerCase().indexOf(query) > -1));
   }
  }

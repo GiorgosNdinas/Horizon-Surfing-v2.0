@@ -125,7 +125,7 @@ export class LessonModalComponent {
           </ion-item>
           <div class="ion-padding" slot="content" style="border: 1px solid; border-top:none;">
             <ion-grid>
-              @for(lesson of this.lessonService.getLessonsForTeacher(teamMember?.id!, student.id); track $index){
+              @for(lesson of this.lessonService.getLessonsForTeacher(teamMember?.id!, student.id!); track $index){
                 <ion-row>
                   <ion-col size="6">{{ lesson.lessonDate }}</ion-col>
                   <ion-col size="4">{{ lesson.lessonType }}</ion-col>
@@ -134,7 +134,7 @@ export class LessonModalComponent {
               }
               <ion-row class="ion-padding-top">
                 <ion-col size="12">
-                  <ion-button (click)="openModal(student.id)"  expand="block">Add lesson</ion-button>
+                  <ion-button (click)="openModal(student.id!)"  expand="block">Add lesson</ion-button>
               </ion-col>
               </ion-row>
             </ion-grid>            
@@ -158,7 +158,7 @@ export class MyStudentsComponent {
   modalController = inject(ModalController);
 
   studentsForDisplay = computed<Customer[]>(() => {
-    return this.customerService.searchCustomers().filter(customer => {
+    return this.customerService.dbSearchCustomers().filter(customer => {
       return customer.activityType === "Lesson" && customer.attachedTeacher == this.teamMember?.id;
     });
   });
@@ -166,7 +166,7 @@ export class MyStudentsComponent {
   // Search input habdler
   handleSearchInput(event: any) {
     const query = event.target.value.toLowerCase();
-    this.customerService.searchCustomers.set(this.customerService.customers().filter((d) => d.name.toLowerCase().indexOf(query) > -1));
+    this.customerService.dbSearchCustomers.set(this.customerService.dbCustomers().filter((d) => d.name.toLowerCase().indexOf(query) > -1));
   }
 
   async openModal(studentId: number) {

@@ -244,8 +244,8 @@ export class CustomerFormComponent implements OnInit {
     activityType: new FormControl('', Validators.required),
     insurance: new FormControl('', Validators.required),
     departureDate: new FormControl('', Validators.required),
-    terms: new FormControl(false, Validators.required),
-    paid: new FormControl(false)
+    terms: new FormControl(0, Validators.required),
+    paid: new FormControl(0)
   });
 
   // Variable needed to set the minimum date on the datepicker.
@@ -287,8 +287,8 @@ export class CustomerFormComponent implements OnInit {
         activityType = '',
         insurance = '',
         departureDate = '',
-        terms = false,
-        paid = false,
+        terms = 0,
+        paid = 0,
       } = customer;
 
       this.customerForm.setValue({
@@ -333,21 +333,21 @@ export class CustomerFormComponent implements OnInit {
  * prevent user modification. In view mode, these controls are enabled, allowing
  * users to update the customer details.
  */
-toggleEdit(): void {
-  this.editForm = !this.editForm;
+  toggleEdit(): void {
+    this.editForm = !this.editForm;
 
-  if (this.editForm) {
-    // Enable certain form controls in edit mode
-    ['activity', 'activityType', 'insurance', 'departureDate'].forEach(controlName => {
-      this.customerForm.get(controlName)?.disable();
-    });
-  } else {
-    // Disable certain form controls in view mode and update the customer details
-    ['activity', 'activityType', 'insurance', 'departureDate'].forEach(controlName => {
-      this.customerForm.get(controlName)?.enable();
-    });
+    if (this.editForm) {
+      // Enable certain form controls in edit mode
+      ['activity', 'activityType', 'insurance', 'departureDate'].forEach(controlName => {
+        this.customerForm.get(controlName)?.disable();
+      });
+    } else {
+      // Disable certain form controls in view mode and update the customer details
+      ['activity', 'activityType', 'insurance', 'departureDate'].forEach(controlName => {
+        this.customerForm.get(controlName)?.enable();
+      });
+    }
   }
-}
 
 
   /**
@@ -359,7 +359,6 @@ toggleEdit(): void {
  */
   submit() {
     const customer: Customer = {
-      id: (this.customerForDisplay) ? this.customerForDisplay!.id : this.customerService.customers().length + 1,
       name: this.customerForm.value.name!,
       surname: this.customerForm.value.surname!,
       homeAddress: this.customerForm.value.homeAddress!,
@@ -371,31 +370,22 @@ toggleEdit(): void {
       insurance: this.customerForm.value.insurance!,
       departureDate: this.customerForm.value.departureDate?.split("T")[0]!,
       terms: this.customerForm.value.terms!,
-      paid: this.customerForm.value.paid!
+      paid: this.customerForm.value.paid!,
+      attachedTeacher: 0
     };
 
-    // TODO: Each customer change, change the database instead
+    // If customerForDisplay is undefined create a new customer
     if (!this.customerForDisplay) {
-      // Add the new customer to the list
-      this.customerService.customers.set([...this.customerService.customers(), customer]);
-
-      // Trigger a search update with the updated customer list
-      this.customerService.searchCustomers.set(this.customerService.customers());
-
-      // Dismiss the modal for a new customer
+      // Add new customer to the database
+      this.customerService.addCustomer(customer);
       return this.modalCtrl.dismiss(customer, 'confirm');
     } else {
-      // Update the existing customer data
-      Object.assign(this.customerService.customers()[this.customerForDisplay!.id - 1], customer);
-
-      // Trigger a search update with the updated customer list
-      this.customerService.searchCustomers.set(this.customerService.customers());
-
+      // Updates the edited customer to the database
+      this.customerService.updateCustomer(customer);
       // Close the editing mode for an existing customer
       this.toggleEdit();
       return;
     }
   }
-
 }
 
