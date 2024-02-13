@@ -86,7 +86,6 @@ export class LessonModalComponent {
   create() {
     const lessonDate = new Date().toISOString().split("T")[0]!;
     const newLesson: Lesson = {
-      id: this.lessonService.getLessons().length + 1,
       lessonDate: lessonDate,
       lessonType: this.lessonForm.value.lessonType!,
       lessonHours: this.lessonForm.value.lessonHours!
@@ -179,9 +178,14 @@ export class MyStudentsComponent {
     const { data, role } = await modal.onWillDismiss();
 
     if (role === 'create') {
-      data.teacherId = this.teamMember?.id;
-      data.customerId = studentId;
-      this.lessonService.addNewLesson(data);
+      const lesson: Lesson = {
+        customerId : studentId,
+        teacherId : this.teamMember?.id,
+        lessonType : data.lessonType,
+        lessonHours : data.lessonHours,
+        lessonDate : data.lessonDate
+      }
+      this.lessonService.addLesson(lesson);
     }
   }
 }

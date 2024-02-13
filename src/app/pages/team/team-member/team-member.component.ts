@@ -1,5 +1,5 @@
 import { OverlayEventDetail } from '@ionic/core/components';
-import { ChangeDetectionStrategy, Component, Input, OnInit, ViewChild, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnInit, ViewChild, WritableSignal, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { IonAlert, IonAvatar, IonBackButton, IonButton, IonButtons, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonCol, IonContent, IonHeader, IonIcon, IonItem, IonModal, IonRow, IonTitle, IonToolbar } from '@ionic/angular/standalone';
 import { TeamMember } from 'src/app/models/team-members.modal';
@@ -96,10 +96,10 @@ export class TeamMemberStudentsComponent {
     if (ev.detail.role === 'confirm') {
       console.log('Closed with confirm', ev.detail.data);
       let index = this.customerService.dbCustomers().indexOf(data);
-
       if (index !== -1) {
         const customer: Customer = this.customerService.dbCustomers()[index];
         customer.attachedTeacher = this.teamMember?.id;
+      // Attach the customer to the teacher by calling updateCustomer()
         this.customerService.updateCustomer(customer);
       } else {
         console.log('Object not found in the array');
@@ -138,7 +138,7 @@ export class TeamMemberStudentsComponent {
     </ion-toolbar>
   </ion-header>
   <ion-content>
-    @if(teamMember){
+    @if(teamMember()){
       <ion-card>
         <ion-row>
           <ion-col size="4">
@@ -148,10 +148,10 @@ export class TeamMemberStudentsComponent {
           </ion-col>
           <ion-col size="8">
             <ion-item lines="none">
-              <h1 style="text-align: center">{{teamMember.name}} {{teamMember.surname}}</h1>
+              <h1 style="text-align: center">{{teamMember()?.name}} {{teamMember()?.surname}}</h1>
             </ion-item>
             <ion-item lines="none">
-              <h4>{{teamMember.subject}}</h4>
+              <h4>{{teamMember()?.subject}}</h4>
             </ion-item>
           </ion-col>
         </ion-row>
@@ -170,15 +170,15 @@ export class TeamMemberStudentsComponent {
           </ion-col>
           <ion-col size="8">
             <ion-item lines="none">
-              <label>Hours this month: {{teamMember.hoursTaughtThisMonth}}</label>
+              <label>Hours this month: {{(teamMember()?.hoursTaughtThisMonth === null)? 0 : teamMember()?.hoursTaughtThisMonth}}</label>
             </ion-item>
             <ion-item lines="none">
-              <label>Total hours: {{teamMember.totalHoursTaught}}</label>
+              <label>Total hours: {{teamMember()?.totalHoursTaught}}</label>
             </ion-item>
           </ion-col>
         </ion-row>
       </ion-card>
-      <app-team-member-students [id]="id" [teamMember]="teamMember"></app-team-member-students>
+      <app-team-member-students [id]="id" [teamMember]="teamMember()"></app-team-member-students>
     }
   </ion-content>
 `,
@@ -202,7 +202,7 @@ export class TeamMemberStudentsComponent {
 })
 export class TeamMemberComponent implements OnInit {
   @Input() id: number | undefined;
-  teamMember: TeamMember | undefined;
+  teamMember = signal<TeamMember | undefined>(undefined);
 
   public alertButtons = [
     {
@@ -227,20 +227,19 @@ export class TeamMemberComponent implements OnInit {
   findTeamMember() {
     const index = this.teamMemberService.dbTeamMembers().findIndex(item => item.id == this.id)
     if (index !== -1)
-      this.teamMember = this.teamMemberService.dbTeamMembers()[index];
+      this.teamMember.set(this.teamMemberService.dbTeamMembers()[index]) ;
   }
 
   deleteTeamMember(ev: any) {
     if (ev.detail.role === "confirm") {  
-      this.teamMemberService.deleteTeamMember(this.teamMember!); 
-      // this.teamMemberService.dbTeamMembers.set(this.teamMemberService.dbTeamMembers().filter(item => item.id !== this.teamMember?.id));
+      this.teamMemberService.deleteTeamMember(this.teamMember()!); 
       this._location.back();
     }
     return
   }
 
   getProfilePic(){
-    const index = this.loadFilesService.images.findIndex(image => image.name === this.teamMember?.profilePic);
+    const index = this.loadFilesService.images.findIndex(image => image.name === this.teamMember()?.profilePic);
 
     if (index !== -1){
       return this.loadFilesService.images[index].data;

@@ -1,7 +1,5 @@
 import { Injectable, WritableSignal, signal } from '@angular/core';
 import { CapacitorSQLite, SQLiteConnection, SQLiteDBConnection } from '@capacitor-community/sqlite';
-import { Customer } from '../models/customer.model';
-import { TeamMember } from '../models/team-members.modal';
 
 const DB_HORIZON_SURFING = 'horizon-surfing-db';
 
@@ -57,8 +55,20 @@ export class DatabaseService {
     );
     `;
 
+    const createLessonSchema = `
+    CREATE TABLE IF NOT EXISTS lesson (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      customerId INTEGER,
+      teacherId INTEGER,
+      lessonType TEXT NOT NULL,
+      lessonHours TEXT NOT NULL,
+      lessonDate TEXT NOT NULL
+    );
+    `;
+
     await this.db.execute(createTeamMemberSchema);
     await this.db.execute(createCustomerSchema);
+    await this.db.execute(createLessonSchema);
     
     return true;
   }

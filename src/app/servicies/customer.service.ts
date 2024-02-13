@@ -1,7 +1,6 @@
 import { DatabaseService } from 'src/app/servicies/database.service';
 import { Injectable, signal } from '@angular/core';
 import { Customer } from '../models/customer.model';
-import { TeamMember } from '../models/team-members.modal';
 import { SQLiteDBConnection } from '@capacitor-community/sqlite';
 
 

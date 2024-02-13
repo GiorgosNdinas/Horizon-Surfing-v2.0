@@ -381,6 +381,7 @@ export class CustomerFormComponent implements OnInit {
       return this.modalCtrl.dismiss(customer, 'confirm');
     } else {
       // Updates the edited customer to the database
+      customer.id = this.customerForDisplay.id;
       this.customerService.updateCustomer(customer);
       // Close the editing mode for an existing customer
       this.toggleEdit();
