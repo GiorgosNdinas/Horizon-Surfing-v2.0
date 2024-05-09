@@ -93,6 +93,18 @@ import { CustomerService } from 'src/app/servicies/customer.service';
       </ion-row>
       <ion-row>
         <ion-col>
+          <!---------------------------- Phone number input ---------------------------->
+          <ion-input 
+            formControlName ="phoneNumber" 
+            label="Phone number*" 
+            errorText="Phone is required" 
+            label-placement="floating" fill="outline" placeholder="Enter Phone number"
+            [readonly]="editForm">
+          </ion-input>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col>
           <ion-item>
             <!---------------------------- Activity input ---------------------------->
             <ion-select 
@@ -240,10 +252,12 @@ export class CustomerFormComponent implements OnInit {
     hotel: new FormControl('', Validators.required),
     hotelRoom: new FormControl('', Validators.required),
     email: new FormControl('', Validators.required),
+    phoneNumber: new FormControl('', Validators.required),
     activity: new FormControl('', Validators.required),
     activityType: new FormControl('', Validators.required),
     insurance: new FormControl('', Validators.required),
     departureDate: new FormControl('', Validators.required),
+    signature: new FormControl(''),
     terms: new FormControl(0, Validators.required),
     paid: new FormControl(0)
   });
@@ -283,10 +297,12 @@ export class CustomerFormComponent implements OnInit {
         hotel = '',
         hotelRoom = null,
         email = '',
+        phoneNumber = '',
         activity = '',
         activityType = '',
         insurance = '',
         departureDate = '',
+        signature = '',
         terms = 0,
         paid = 0,
       } = customer;
@@ -298,10 +314,12 @@ export class CustomerFormComponent implements OnInit {
         hotel,
         hotelRoom,
         email,
+        phoneNumber,
         activity,
         activityType,
         insurance,
         departureDate,
+        signature,
         terms,
         paid,
       });
@@ -365,10 +383,12 @@ export class CustomerFormComponent implements OnInit {
       hotel: this.customerForm.value.hotel!,
       hotelRoom: this.customerForm.value.hotelRoom!,
       email: this.customerForm.value.email!,
+      phoneNumber: this.customerForm.value.phoneNumber!,
       activity: this.customerForm.value.activity!,
       activityType: this.customerForm.value.activityType!,
       insurance: this.customerForm.value.insurance!,
       departureDate: this.customerForm.value.departureDate?.split("T")[0]!,
+      signature: this.customerForm.value.signature!,
       terms: this.customerForm.value.terms!,
       paid: this.customerForm.value.paid!,
       attachedTeacher: 0

@@ -45,10 +45,12 @@ export class DatabaseService {
       hotel TEXT NOT NULL,
       hotelRoom TEXT NOT NULL,
       email TEXT NOT NULL,
+      phoneNumber TEXT NOT NULL,
       activity TEXT NOT NULL,
       activityType TEXT NOT NULL,
       insurance TEXT NOT NULL,
       departureDate TEXT NOT NULL,
+      signature TEXT,
       terms INTEGER,
       paid INTEGER DEFAULT 0,
       attachedTeacher INTEGER

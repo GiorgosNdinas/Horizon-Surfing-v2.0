@@ -26,14 +26,14 @@ export class CustomerService {
   }
 
   async addCustomer(customer: Customer){
-    const query = `INSERT INTO customer (name, surname, homeAddress, hotel, hotelRoom, email, activity, activityType, insurance, departureDate, terms, paid, attachedTeacher) VALUES ('${customer.name}', '${customer.surname}', '${customer.homeAddress}', '${customer.hotel}', '${customer.hotelRoom}', '${customer.email}', '${customer.activity}', '${customer.activityType}', '${customer.insurance}','${customer.departureDate}',${customer.terms}, ${customer.paid}, ${customer.attachedTeacher})`;
+    const query = `INSERT INTO customer (name, surname, homeAddress, hotel, hotelRoom, email, phoneNumber, activity, activityType, insurance, departureDate, signature, terms, paid, attachedTeacher) VALUES ('${customer.name}', '${customer.surname}', '${customer.homeAddress}', '${customer.hotel}', '${customer.hotelRoom}', '${customer.email}', '${customer.phoneNumber}', '${customer.activity}', '${customer.activityType}', '${customer.insurance}','${customer.departureDate}', '${customer.signature}' , ${customer.terms}, ${customer.paid}, ${customer.attachedTeacher})`;
     const result = await this.db.query(query);
 
     this.getCustomers();
   }
 
   async updateCustomer(customer: Customer){
-    const query = `UPDATE customer SET name = '${customer.name}', surname = '${customer.surname}', homeAddress = '${customer.homeAddress}', hotel = '${customer.hotel}', hotelRoom = '${customer.hotelRoom}', email = '${customer.email}', activity = '${customer.activity}', activityType = '${customer.activityType}', insurance = '${customer.insurance}', departureDate = '${customer.departureDate}', terms = ${customer.terms}, paid = ${customer.paid}, attachedTeacher = ${customer.attachedTeacher} WHERE id = ${customer.id}`;
+    const query = `UPDATE customer SET name = '${customer.name}', surname = '${customer.surname}', homeAddress = '${customer.homeAddress}', hotel = '${customer.hotel}', hotelRoom = '${customer.hotelRoom}', email = '${customer.email}', phoneNumber = '${customer.phoneNumber}', activity = '${customer.activity}', activityType = '${customer.activityType}', insurance = '${customer.insurance}', departureDate = '${customer.departureDate}', signature = '${customer.signature}', terms = ${customer.terms}, paid = ${customer.paid}, attachedTeacher = ${customer.attachedTeacher} WHERE id = ${customer.id}`;
     const result = await this.db.query(query);
 
     this.getCustomers();
