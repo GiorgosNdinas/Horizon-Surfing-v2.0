@@ -5,6 +5,7 @@ import { IonButton, IonButtons, IonCheckbox, IonCol, IonContent, IonDatetime, Io
 import { Customer } from 'src/app/models/customer.model';
 import { TermsOfServiceComponent } from "../../../terms-of-service/terms-of-service.component";
 import { CustomerService } from 'src/app/servicies/customer.service';
+import { SignPadComponent } from '../sign-pad/sign-pad.component';
 
 @Component({
   selector: 'app-customer-form',
@@ -151,7 +152,7 @@ import { CustomerService } from 'src/app/servicies/customer.service';
       </ion-row>
       <ion-row>
         <!---------------------------- Departure date picker ---------------------------->
-        <ion-col style="text-align: center; margin">
+        <ion-col style="text-align: center;">
           <ion-label>Departure date*</ion-label>
         </ion-col>
       </ion-row>
@@ -166,6 +167,18 @@ import { CustomerService } from 'src/app/servicies/customer.service';
           >
           </ion-datetime>
           </ion-col>
+      </ion-row>
+      <ion-row>
+        <!---------------------------- Signature ---------------------------->
+        <ion-col style="margin-top: 10px;">
+          <ion-label>Signature*</ion-label>
+          @if(!customerForDisplay){
+            <app-sign-pad (signature)="handleSignature($event)"></app-sign-pad>
+          }
+          @if(customerForDisplay){
+            <img [src]="this.customerForm.controls.signature.value" style="border: 1px solid">
+          }
+        </ion-col>
       </ion-row>
       @if(!customerForDisplay){
         <ion-row>
@@ -237,7 +250,8 @@ import { CustomerService } from 'src/app/servicies/customer.service';
     IonFabList,
     IonFabButton,
     IonIcon,
-    TermsOfServiceComponent
+    SignPadComponent,
+    TermsOfServiceComponent,
   ]
 })
 export class CustomerFormComponent implements OnInit {
@@ -257,7 +271,7 @@ export class CustomerFormComponent implements OnInit {
     activityType: new FormControl('', Validators.required),
     insurance: new FormControl('', Validators.required),
     departureDate: new FormControl('', Validators.required),
-    signature: new FormControl(''),
+    signature: new FormControl('', Validators.required),
     terms: new FormControl(0, Validators.required),
     paid: new FormControl(0)
   });
@@ -334,6 +348,11 @@ export class CustomerFormComponent implements OnInit {
   // Change the value of the 'terms' form control on every checkbox click
   termsCheckboxClick(e: any) {
     this.customerForm.controls.terms.setValue(e.detail.checked);
+  }
+
+  handleSignature(event: any) {
+    console.log('Here:', event);
+    this.customerForm.controls.signature.setValue(event);
   }
 
   formValidation() {
