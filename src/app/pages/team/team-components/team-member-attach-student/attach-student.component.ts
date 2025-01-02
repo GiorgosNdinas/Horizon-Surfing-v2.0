@@ -54,7 +54,7 @@ export class AttachStudentComponent {
 
   studentsForDisplay = computed<Customer[]>(() => {
     return this.customerService.dbSearchCustomers().filter(customer => {
-      return customer.activity === this.teamMember?.subject && customer.activityType === "Lesson" && customer.attachedTeacher == 0;        
+      return customer.activity === this.teamMember?.subject && customer.activityType === "Lesson";        
     });
   });
 

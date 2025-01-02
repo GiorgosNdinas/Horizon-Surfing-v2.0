@@ -40,11 +40,10 @@ export class HomePage {
     this.loadFilesService.loadFiles();
   }
 
-  customers = this.customerService.dbCustomers();
+  // customers = this.customerService.dbCustomers();
 
   // Function to navigate depending on wich button is pressed
   navigateToPage(page: string) {
-    console.log(page);
     this.router.navigate([`/${page}`]);
   }
 }

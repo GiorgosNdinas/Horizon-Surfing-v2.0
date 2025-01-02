@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, Input, OnInit, ViewChild, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output, ViewChild, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { IonButton, IonButtons, IonCheckbox, IonCol, IonContent, IonDatetime, IonFab, IonFabButton, IonFabList, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonModal, IonRow, IonSelect, IonSelectOption, IonTitle, IonToolbar, ModalController } from '@ionic/angular/standalone';
 import { Customer } from 'src/app/models/customer.model';
@@ -113,11 +113,10 @@ import { SignPadComponent } from '../sign-pad/sign-pad.component';
               errorText="Activity is required."
               label="Select activity*" 
               label-placement="floating">
-              <ion-select-option value="Windsurfing">Windsurfing</ion-select-option>
-              <ion-select-option value="Kitesurfing">Kitesurfing</ion-select-option>
-              <ion-select-option value="Catamaran">Catamaran</ion-select-option>
-              <ion-select-option value="Wingfoiling">Wingfoiling</ion-select-option>
-              
+              <ion-select-option value="windsurfing">Windsurfing</ion-select-option>
+              <ion-select-option value="kitesurfing">Kitesurfing</ion-select-option>
+              <ion-select-option value="catamaran">Catamaran</ion-select-option>
+              <ion-select-option value="wingfoiling">Wingfoiling</ion-select-option>              
             </ion-select>
           </ion-item>
         </ion-col>
@@ -129,9 +128,9 @@ import { SignPadComponent } from '../sign-pad/sign-pad.component';
               errorText="Activity type is required."
               label="Activity type*" 
               label-placement="floating">
-              <ion-select-option value="Lesson">Lesson</ion-select-option>
-              <ion-select-option value="Rental">Rental</ion-select-option>
-              <ion-select-option value="Other">Other</ion-select-option>
+              <ion-select-option value="lesson">Lesson</ion-select-option>
+              <ion-select-option value="rental">Rental</ion-select-option>
+              <ion-select-option value="other">Other</ion-select-option>
             </ion-select>
           </ion-item>
         </ion-col>
@@ -180,7 +179,7 @@ import { SignPadComponent } from '../sign-pad/sign-pad.component';
           }
         </ion-col>
       </ion-row>
-      @if(!customerForDisplay){
+      @if(!editForm){
         <ion-row>
         <!---------------------------- Terms check ---------------------------->
         <ion-col style="margin-top: 10px; margin-left: 10px;">
@@ -212,6 +211,7 @@ import { SignPadComponent } from '../sign-pad/sign-pad.component';
       }
       @if(!editForm){
         <ion-button class="ion-margin-top" color="dark" expand="block" fill="outline" [disabled]="formValidation()" (click)="submit()" >Submit</ion-button>
+        <ion-button></ion-button>
       }
     </ion-grid>
   </form>
@@ -247,7 +247,6 @@ import { SignPadComponent } from '../sign-pad/sign-pad.component';
     IonButton,
     IonContent,
     IonFab,
-    IonFabList,
     IonFabButton,
     IonIcon,
     SignPadComponent,
@@ -255,7 +254,10 @@ import { SignPadComponent } from '../sign-pad/sign-pad.component';
   ]
 })
 export class CustomerFormComponent implements OnInit {
+  
   @Input() customerForDisplay: Customer | undefined;
+  // Confirmation that the customer was submited for the parent.
+  @Output() customerSubmited  = new EventEmitter<boolean>();
   @ViewChild(IonModal) modal!: IonModal;
 
   // Form declaration using Angular Reactive Forms
@@ -351,7 +353,6 @@ export class CustomerFormComponent implements OnInit {
   }
 
   handleSignature(event: any) {
-    console.log('Here:', event);
     this.customerForm.controls.signature.setValue(event);
   }
 
@@ -410,21 +411,40 @@ export class CustomerFormComponent implements OnInit {
       signature: this.customerForm.value.signature!,
       terms: this.customerForm.value.terms!,
       paid: this.customerForm.value.paid!,
-      attachedTeacher: 0
     };
 
     // If customerForDisplay is undefined create a new customer
     if (!this.customerForDisplay) {
       // Add new customer to the database
-      this.customerService.addCustomer(customer);
-      return this.modalCtrl.dismiss(customer, 'confirm');
+      this.customerService.addCustomer(customer)
+        .then(() => {
+          console.log('New customer added successfully');
+          // Send confirmation that the user was submited successfully.
+          this.customerSubmited.emit(true);
+        })
+        .catch((error) => {
+          console.error('Error adding new customer:', error);
+          // Send confirmation that the user was not submited successfully.
+          this.customerSubmited.emit(false);
+        });
     } else {
-      // Updates the edited customer to the database
+      // Update the edited customer in the database
       customer.id = this.customerForDisplay.id;
-      this.customerService.updateCustomer(customer);
-      // Close the editing mode for an existing customer
-      this.toggleEdit();
-      return;
+      this.customerService.updateCustomer(customer)
+        .then(() => {
+          console.log('Customer updated successfully.');
+          // Send confirmation that the user was submited successfully.
+          this.customerSubmited.emit(true);
+        })
+        .catch((error) => {
+          console.error('Error updating customer:', error);
+          // Send confirmation that the user was not submited successfully.
+          this.customerSubmited.emit(false);
+        })
+        .finally(() => {
+          // Close the editing mode for an existing customer
+          this.toggleEdit();
+        });
     }
   }
 }

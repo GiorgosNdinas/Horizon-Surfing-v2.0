@@ -14,5 +14,4 @@ export interface Customer {
   signature: string,
   terms?: number,
   paid: number,
-  attachedTeacher?: number
 }

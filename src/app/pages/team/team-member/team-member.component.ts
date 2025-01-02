@@ -98,7 +98,6 @@ export class TeamMemberStudentsComponent {
       let index = this.customerService.dbCustomers().indexOf(data);
       if (index !== -1) {
         const customer: Customer = this.customerService.dbCustomers()[index];
-        customer.attachedTeacher = this.teamMember?.id;
       // Attach the customer to the teacher by calling updateCustomer()
         this.customerService.updateCustomer(customer);
       } else {

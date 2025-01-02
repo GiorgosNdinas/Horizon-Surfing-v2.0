@@ -53,7 +53,6 @@ export class DatabaseService {
       signature TEXT,
       terms INTEGER,
       paid INTEGER DEFAULT 0,
-      attachedTeacher INTEGER
     );
     `;
 

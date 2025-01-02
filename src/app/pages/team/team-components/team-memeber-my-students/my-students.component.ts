@@ -158,7 +158,7 @@ export class MyStudentsComponent {
 
   studentsForDisplay = computed<Customer[]>(() => {
     return this.customerService.dbSearchCustomers().filter(customer => {
-      return customer.activityType === "Lesson" && customer.attachedTeacher == this.teamMember?.id;
+      return customer.activityType === "Lesson";
     });
   });
 
