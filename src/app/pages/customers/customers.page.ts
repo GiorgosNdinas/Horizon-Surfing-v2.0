@@ -1,9 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, ViewChild, inject } from '@angular/core';
-import { IonBackButton, IonButton, IonButtons, IonContent, IonHeader, IonIcon, IonModal, IonTitle, IonToolbar } from '@ionic/angular/standalone';
-import { OverlayEventDetail } from '@ionic/core/components';
-import { CustomerFormComponent } from "./customer-components/customer-form/customer-form.component";
-import { CustomerListComponent } from "./customer-components/customer-list/customer-list.component";
+import { IonBackButton, IonButton, IonButtons, IonContent, IonHeader, IonIcon, IonTitle, IonToolbar } from '@ionic/angular/standalone';
+import { CustomerListComponent } from "./customer-list/customer-list.component";
 import { CustomerService } from 'src/app/servicies/customer.service';
 import { Router } from '@angular/router';
 

@@ -19,24 +19,21 @@ import { CustomerService } from 'src/app/servicies/customer.service';
     RouterLink
   ],
   template: `
-  <ion-searchbar [debounce]="500" placeholder="Search customer by Name" (ionInput)="handleSearchInput($event)" style="padding-top: 20px"></ion-searchbar>
+  <ion-searchbar [debounce]="500" placeholder="Search customer by Surname" (ionInput)="handleSearchInput($event)" style="padding-top: 20px"></ion-searchbar>
   <ion-list>
     <ion-grid>
       <ion-row class="ion-align-items-start">
           <ion-col size="auto">#</ion-col>
           <ion-col>Name</ion-col>
           <ion-col>Surname</ion-col>
-          <ion-col>Activity</ion-col>
           <ion-col>Departure</ion-col>
           <ion-col size="2">Paid</ion-col>
       </ion-row>
       @for(customer of this.customersForDisplay(); track $index){
-        <!--------------------TODO: Change index to customer id ---------------------->
         <ion-row class="ion-align-items-start" [routerLink]="[customer.id]">
           <ion-col size="auto">{{$index + 1}}</ion-col>
           <ion-col>{{customer.name}}</ion-col>
           <ion-col>{{customer.surname}}</ion-col>
-          <ion-col>{{customer.activity}}</ion-col>
           <ion-col>{{customer.departureDate!.split("-").reverse().join("-")}}</ion-col>
           @if(customer.paid){
             <ion-col size="2"><ion-icon name="checkmark-outline"></ion-icon></ion-col>
@@ -63,6 +60,6 @@ export class CustomerListComponent {
   // Search input handler
   handleSearchInput(event: any) {
     const query = event.target.value.toLowerCase();
-    this.customerService.dbSearchCustomers.set(this.customerService.dbCustomers().filter((d) => d.name.toLowerCase().indexOf(query) > -1));
+    this.customerService.dbSearchCustomers.set(this.customerService.dbCustomers().filter((d) => d.surname.toLowerCase().indexOf(query) > -1));
   }
  }

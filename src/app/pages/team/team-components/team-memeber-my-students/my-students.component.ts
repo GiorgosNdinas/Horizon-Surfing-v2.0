@@ -120,7 +120,6 @@ export class LessonModalComponent {
           <ion-item slot="header" color="light">
             <ion-label>{{student.name}}</ion-label>
             <ion-label>{{student.surname}}</ion-label>
-            <ion-label>{{student.activity}}</ion-label>
           </ion-item>
           <div class="ion-padding" slot="content" style="border: 1px solid; border-top:none;">
             <ion-grid>
@@ -158,7 +157,7 @@ export class MyStudentsComponent {
 
   studentsForDisplay = computed<Customer[]>(() => {
     return this.customerService.dbSearchCustomers().filter(customer => {
-      return customer.activityType === "Lesson";
+      return customer;
     });
   });
 

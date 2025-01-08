@@ -99,7 +99,7 @@ export class TeamMemberStudentsComponent {
       if (index !== -1) {
         const customer: Customer = this.customerService.dbCustomers()[index];
       // Attach the customer to the teacher by calling updateCustomer()
-        this.customerService.updateCustomer(customer);
+        // this.customerService.updateCustomer(customer);
       } else {
         console.log('Object not found in the array');
       }

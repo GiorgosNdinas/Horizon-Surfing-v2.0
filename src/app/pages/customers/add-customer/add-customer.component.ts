@@ -1,7 +1,7 @@
 import { IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent } from '@ionic/angular/standalone';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { CustomerFormComponent } from "../customer-components/customer-form/customer-form.component";
 import { Router } from '@angular/router';
+import { CustomerFormComponent } from '../customer-form/customer-form.component';
 
 @Component({
   selector: 'app-add-customer',
@@ -33,6 +33,7 @@ export class AddCustomerComponent {
     this.router.navigateByUrl('/customers');
   };
 
+  // This function navigates the user to the customers page if the new customer was submited successfully
   navigate(customerSubmited: boolean){
     if(customerSubmited)
       this.router.navigateByUrl('/customers');

@@ -28,7 +28,7 @@ export class CustomerService {
 
   // Function that adds a customer to the database
   async addCustomer(customer: Customer){
-    const query = `INSERT INTO customer (name, surname, homeAddress, hotel, hotelRoom, email, phoneNumber, activity, activityType, insurance, departureDate, signature, terms, paid) VALUES ('${customer.name}', '${customer.surname}', '${customer.homeAddress}', '${customer.hotel}', '${customer.hotelRoom}', '${customer.email}', '${customer.phoneNumber}', '${customer.activity}', '${customer.activityType}', '${customer.insurance}','${customer.departureDate}', '${customer.signature}' , ${customer.terms}, ${customer.paid})`;
+    const query = `INSERT INTO customer (name, surname, homeAddress, hotel, hotelRoom, email, phoneNumber, departureDate, signature, terms, paid) VALUES ('${customer.name}', '${customer.surname}', '${customer.homeAddress}', '${customer.hotel}', '${customer.hotelRoom}', '${customer.email}', '${customer.phoneNumber}', '${customer.departureDate}', '${customer.signature}' , ${customer.terms}, ${customer.paid})`;
     const result = await this.db.query(query);
 
     this.getCustomers();
@@ -36,7 +36,7 @@ export class CustomerService {
 
   // Function to edit a customer from the database
   async updateCustomer(customer: Customer){
-    const query = `UPDATE customer SET name = '${customer.name}', surname = '${customer.surname}', homeAddress = '${customer.homeAddress}', hotel = '${customer.hotel}', hotelRoom = '${customer.hotelRoom}', email = '${customer.email}', phoneNumber = '${customer.phoneNumber}', activity = '${customer.activity}', activityType = '${customer.activityType}', insurance = '${customer.insurance}', departureDate = '${customer.departureDate}', signature = '${customer.signature}', terms = ${customer.terms}, paid = ${customer.paid} WHERE id = ${customer.id}`;
+    const query = `UPDATE customer SET name = '${customer.name}', surname = '${customer.surname}', homeAddress = '${customer.homeAddress}', hotel = '${customer.hotel}', hotelRoom = '${customer.hotelRoom}', email = '${customer.email}', phoneNumber = '${customer.phoneNumber}', departureDate = '${customer.departureDate}', signature = '${customer.signature}', terms = ${customer.terms}, paid = ${customer.paid} WHERE id = ${customer.id}`;
     const result = await this.db.query(query);
 
     this.getCustomers();

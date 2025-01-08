@@ -1,3 +1,9 @@
 :host {
   display: block;
 }
+
+.my-bill-header{
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}

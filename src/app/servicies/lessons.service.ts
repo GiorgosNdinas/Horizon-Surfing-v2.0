@@ -8,11 +8,11 @@ import { TeamMemberService } from './team-member.service';
   providedIn: 'root'
 })
 export class LessonsService {
-  private db: SQLiteDBConnection = this.databaseSErvice.getDatabaseConnection();
+  private db: SQLiteDBConnection = this.databaseService.getDatabaseConnection();
 
   dbLessons = signal<Lesson[]>([]);
 
-  constructor(private databaseSErvice: DatabaseService, private teamMemberService: TeamMemberService) { }
+  constructor(private databaseService: DatabaseService, private teamMemberService: TeamMemberService) { }
 
   async getLessons() {
     const lessons = await this.db.query('SELECT * FROM lesson');

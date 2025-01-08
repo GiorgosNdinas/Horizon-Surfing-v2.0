@@ -13,7 +13,6 @@ import { CustomerService } from 'src/app/servicies/customer.service';
     IonGrid,
     IonRow,
     IonCol,
-    IonItem,
     IonButton,
     IonIcon,
     IonAlert
@@ -26,8 +25,6 @@ import { CustomerService } from 'src/app/servicies/customer.service';
           <ion-row>
             <ion-col size="3">{{student.name}}</ion-col>
             <ion-col size="3">{{student.surname}}</ion-col>
-            <ion-col size="3">{{student.activity}}</ion-col>
-            <ion-col size="2">{{student.activityType}}</ion-col>
             <ion-col size="1">
               <ion-button [id]="student.id" fill="clear">
               <ion-icon name="attach-outline"></ion-icon>  
@@ -54,7 +51,7 @@ export class AttachStudentComponent {
 
   studentsForDisplay = computed<Customer[]>(() => {
     return this.customerService.dbSearchCustomers().filter(customer => {
-      return customer.activity === this.teamMember?.subject && customer.activityType === "Lesson";        
+      // return customer.activity === this.teamMember?.subject && customer.activityType === "Lesson";        
     });
   });
 
