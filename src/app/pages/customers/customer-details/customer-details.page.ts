@@ -5,6 +5,8 @@ import { CustomerService } from 'src/app/servicies/customer.service';
 import { Customer } from 'src/app/models/customer.model';
 import { LessonsService } from 'src/app/servicies/lessons.service';
 import { CustomerFormComponent } from '../customer-form/customer-form.component';
+import { ActivityListComponent } from "../../../components/activity-list/activity-list.component";
+import { ActivityService } from 'src/app/servicies/activity.service';
 
 @Component({
   selector: 'app-customer-details',
@@ -54,25 +56,7 @@ import { CustomerFormComponent } from '../customer-form/customer-form.component'
         <ion-button>New activity</ion-button>
       </ion-card-header>
       <ion-card-content>
-        <ion-item>Test</ion-item>
-        <!-- <ion-list>
-          <ion-grid>
-            <ion-row style="border-bottom: 1px solid;">
-              <ion-col size="4">Lesson</ion-col>
-              <ion-col size="4">Date</ion-col>
-              <ion-col size="2">Type</ion-col>
-              <ion-col size="2">Hour</ion-col>
-            </ion-row>
-            @for(lesson of this.lessonsService.getLessonsForCustomer(this.customerForDisplay.id!); track $index){
-              <ion-row>
-                <ion-col size="4">{{this.customerForDisplay.activity}}</ion-col>
-                <ion-col size="4">{{lesson.lessonDate}}</ion-col>
-                <ion-col size="2">{{lesson.lessonType}}</ion-col>
-                <ion-col size="2">{{lesson.lessonHours}}</ion-col>
-              </ion-row>
-            }
-          </ion-grid>
-        </ion-list> -->
+        <app-activity-list [activities]="getActivitiesForCustomer()"  ></app-activity-list>
       </ion-card-content>
     </ion-card>
     <ion-item></ion-item>
@@ -92,23 +76,20 @@ import { CustomerFormComponent } from '../customer-form/customer-form.component'
     IonIcon,
     IonAlert,
     IonCard,
-    IonInput,
-    IonList,
-    IonGrid,
     IonItem,
-    IonRow,
-    IonCol,
     IonCardHeader,
     IonCardTitle,
     IonCardContent,
-    CustomerFormComponent
-  ]
+    CustomerFormComponent,
+    ActivityListComponent
+]
 })
 export class CustomerDetailsPage implements OnInit {
   @Input() id!: number;
   customerForDisplay!: Customer;
   customerService = inject(CustomerService);
   lessonsService = inject(LessonsService);
+  activityService = inject(ActivityService);
 
   public alertButtons = [
     {
@@ -125,10 +106,21 @@ export class CustomerDetailsPage implements OnInit {
     this.customerForDisplay = this.customerService.dbCustomers()[this.id - 1];
   }
 
+  getActivitiesForCustomer(){
+    this.activityService.getActivityForCustomer(this.customerForDisplay.id!)
+    .then((result) => {
+      return result.values
+    }).catch((error) => {
+      console.error(error);
+      console.error(error)
+    }).finally(() => {});
+    return []
+  }
+
   updateCustomerPayment(ev: any) {
     if (ev.detail.role === "confirm") {
       this.customerForDisplay.paid = (this.customerForDisplay.paid == 0)? 1 : 0;
-      // this.customerService.updateCustomer(this.customerForDisplay);
+      this.customerService.updateCustomer(this.customerForDisplay);
     }
   }
 }
