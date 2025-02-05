@@ -1,7 +1,7 @@
-import { Injectable, WritableSignal, signal } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { CapacitorSQLite, SQLiteConnection, SQLiteDBConnection } from '@capacitor-community/sqlite';
 
-const DB_HORIZON_SURFING = 'horizon-surfing-db';
+const DB_HORIZON_SURFING = 'horizon-surfing-db-1';
 
 @Injectable({
   providedIn: 'root'
@@ -30,7 +30,6 @@ export class DatabaseService {
       surname TEXT NOT NULL,
       totalHoursTaught INTEGER,
       hoursTaughtThisMonth INTEGER,
-      subject TEXT NOT NULL,
       profilePic TEXT NOT NULL,
       deleted INTEGER DEFAULT 0
     );
@@ -46,30 +45,26 @@ export class DatabaseService {
       hotelRoom TEXT NOT NULL,
       email TEXT NOT NULL,
       phoneNumber TEXT NOT NULL,
-      activity TEXT NOT NULL,
-      activityType TEXT NOT NULL,
-      insurance TEXT NOT NULL,
       departureDate TEXT NOT NULL,
       signature TEXT,
       terms INTEGER,
-      paid INTEGER DEFAULT 0,
+      paid INTEGER DEFAULT 0
     );
     `;
 
-    const createLessonSchema = `
-    CREATE TABLE IF NOT EXISTS lesson (
+    const createActivitySchema = `
+    CREATE TABLE IF NOT EXISTS activity (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       customerId INTEGER,
-      teacherId INTEGER,
-      lessonType TEXT NOT NULL,
-      lessonHours TEXT NOT NULL,
-      lessonDate TEXT NOT NULL
+      name TEXT NOT NULL,
+      type TEXT NOT NULL,
+      teamMemberId INTEGER
     );
     `;
 
     await this.db.execute(createTeamMemberSchema);
     await this.db.execute(createCustomerSchema);
-    await this.db.execute(createLessonSchema);
+    await this.db.execute(createActivitySchema);
     
     return true;
   }

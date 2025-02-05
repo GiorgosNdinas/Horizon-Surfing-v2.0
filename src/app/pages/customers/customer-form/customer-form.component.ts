@@ -6,6 +6,7 @@ import { SignPadComponent } from 'src/app/components/sign-pad/sign-pad.component
 import { Customer } from 'src/app/models/customer.model';
 import { CustomerService } from 'src/app/servicies/customer.service';
 import { TermsOfServiceComponent } from '../../terms-of-service/terms-of-service.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-customer-form',
@@ -212,10 +213,10 @@ import { TermsOfServiceComponent } from '../../terms-of-service/terms-of-service
   ]
 })
 export class CustomerFormComponent implements OnInit {
-  
+
   @Input() customerForDisplay: Customer | undefined;
   // Confirmation that the customer was submited for the parent.
-  @Output() customerSubmited  = new EventEmitter<boolean>();
+  @Output() customerSubmited = new EventEmitter<boolean>();
   @ViewChild(IonModal) modal!: IonModal;
 
   // Form declaration using Angular Reactive Forms

@@ -7,6 +7,7 @@ import { LessonsService } from 'src/app/servicies/lessons.service';
 import { CustomerFormComponent } from '../customer-form/customer-form.component';
 import { ActivityListComponent } from "../../../components/activity-list/activity-list.component";
 import { ActivityService } from 'src/app/servicies/activity.service';
+import { Activity } from 'src/app/models/activity.modal';
 
 @Component({
   selector: 'app-customer-details',
@@ -19,8 +20,7 @@ import { ActivityService } from 'src/app/servicies/activity.service';
       </ion-buttons>
       <ion-title>Customer info</ion-title>
       <ion-buttons slot="end">
-        <!-- @if(this.customerForDisplay.paid){ -->
-        @if(true){
+        @if(this.customerForDisplay.paid){
           <ion-button id="present-alert" fill="outline" color="success">
             <ion-icon slot="start" name="checkmark-outline"></ion-icon>  
             Paid
@@ -32,8 +32,7 @@ import { ActivityService } from 'src/app/servicies/activity.service';
             (didDismiss)="updateCustomerPayment($event)"
           ></ion-alert>
         }
-        <!-- @if(!this.customerForDisplay.paid){ -->
-        @if(false){
+        @if(!this.customerForDisplay.paid){
           <ion-button id="present-alert" fill="outline" color="danger">
             <ion-icon slot="start" name="close-outline"></ion-icon>  
             Paid
@@ -56,7 +55,7 @@ import { ActivityService } from 'src/app/servicies/activity.service';
         <ion-button>New activity</ion-button>
       </ion-card-header>
       <ion-card-content>
-        <app-activity-list [activities]="getActivitiesForCustomer()"  ></app-activity-list>
+        <app-activity-list [activities]="customerActivitiesForDisplay"  ></app-activity-list>
       </ion-card-content>
     </ion-card>
     <ion-item></ion-item>
@@ -86,10 +85,14 @@ import { ActivityService } from 'src/app/servicies/activity.service';
 })
 export class CustomerDetailsPage implements OnInit {
   @Input() id!: number;
-  customerForDisplay!: Customer;
+
   customerService = inject(CustomerService);
   lessonsService = inject(LessonsService);
   activityService = inject(ActivityService);
+
+  customerForDisplay!: Customer;
+  customerActivitiesForDisplay: Activity[] = [];
+  
 
   public alertButtons = [
     {
@@ -104,12 +107,21 @@ export class CustomerDetailsPage implements OnInit {
 
   ngOnInit(): void {
     this.customerForDisplay = this.customerService.dbCustomers()[this.id - 1];
+    this.customerActivitiesForDisplay = this.getActivitiesForCustomer();
   }
 
+  /**
+   * Retrieves activities for a specific customer.
+   *
+   * This method fetches activities associated with the customer identified by `customerForDisplay.id`.
+   * It uses the `activityService` to get the activities and handles the result or any errors that may occur.
+   *
+   * @returns {Array} An empty array is returned immediately, but the actual activities are handled asynchronously.
+   */
   getActivitiesForCustomer(){
     this.activityService.getActivityForCustomer(this.customerForDisplay.id!)
     .then((result) => {
-      return result.values
+      return result.values;
     }).catch((error) => {
       console.error(error);
       console.error(error)

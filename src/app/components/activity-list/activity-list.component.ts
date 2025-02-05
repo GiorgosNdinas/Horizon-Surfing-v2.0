@@ -15,15 +15,15 @@ import { Activity } from 'src/app/models/activity.modal';
     <ion-list>
       <ion-grid>
         <ion-row style="border-bottom: 1px solid;">
-          <ion-col size="4">Activity</ion-col>
-          <ion-col size="2">Type</ion-col>
+          <ion-col size="3">Activity</ion-col>
+          <ion-col size="3">Type</ion-col>
           <ion-col size="4">Duration</ion-col>
-          <ion-col size="2">Team Member</ion-col>
+          <ion-col size="2">Team</ion-col>
         </ion-row>
         @for(activity of this.activities; track $index){
           <ion-row>
-            <ion-col size="4">{{activity.name}}</ion-col>
-            <ion-col size="2">{{activity.type}}</ion-col>
+            <ion-col size="3">{{activity.name}}</ion-col>
+            <ion-col size="3">{{activity.type}}</ion-col>
             <ion-col size="4">{{activity.duration}}</ion-col>
             <ion-col size="2">{{activity.teamMemberId}}</ion-col> <!-- TODO CHANGE SO IT SHOWS THE NAME OF THE MEMBER -->
           </ion-row>
