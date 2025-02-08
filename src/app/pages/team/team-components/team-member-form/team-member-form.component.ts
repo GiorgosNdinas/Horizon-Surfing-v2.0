@@ -38,24 +38,6 @@ import { DatabaseService } from 'src/app/servicies/database.service';
           </ion-input>
         </ion-col>
       </ion-row>
-      <ion-row>
-        <ion-col>
-          <ion-item>
-            <!---------------------------- Activity input ---------------------------->
-            <ion-select 
-              formControlName ="subject" 
-              errorText="Activity is required."
-              label="Select activity*" 
-              label-placement="floating"
-              [multiple]="false">
-              <ion-select-option value="Windsurfing">Windsurfing</ion-select-option>
-              <ion-select-option value="Kitesurfing">Kitesurfing</ion-select-option>
-              <ion-select-option value="Catamaran">Catamaran</ion-select-option>
-              <ion-select-option value="Wingfoiling">Wingfoiling</ion-select-option>
-            </ion-select>
-          </ion-item>
-        </ion-col>
-      </ion-row>
       <ion-button class="ion-margin-top" color="dark" expand="block" fill="outline" [disabled]="formValidation()" (click)="submit()" >Submit</ion-button>
     </ion-grid>
   </form>
@@ -70,9 +52,6 @@ import { DatabaseService } from 'src/app/servicies/database.service';
     IonRow,
     IonCol,
     IonInput,
-    IonSelect,
-    IonSelectOption,
-    IonItem,
     IonButton,
     TeamProfilePhotoComponent
   ]
@@ -80,15 +59,13 @@ import { DatabaseService } from 'src/app/servicies/database.service';
 export class TeamMemberFormComponent {
   private teamMemberService = inject(TeamMemberService);
   private modalCtrl = inject(ModalController);
-  private databaseService = inject(DatabaseService);
 
   private defaultProfilePicture = 'https://ionicframework.com/docs/img/demos/avatar.svg';
 
   teamMemberForm = new FormGroup({
     profilePicture: new FormControl(''),
     name: new FormControl('', Validators.required),
-    surname: new FormControl('', Validators.required),
-    subject: new FormControl('', Validators.required)
+    surname: new FormControl('', Validators.required)
   });
 
   formValidation() {
@@ -99,9 +76,6 @@ export class TeamMemberFormComponent {
     const teamMember: TeamMember = {
       name: this.teamMemberForm.value.name!,
       surname: this.teamMemberForm.value.surname!,
-      totalHoursTaught: 0,
-      hoursTaughtThisMonth: 0,
-      subject: this.teamMemberForm.value.subject!,
       profilePic: (this.teamMemberForm.value.profilePicture?.length! > 0) ? this.teamMemberForm.value.profilePicture! : this.defaultProfilePicture
     }
 

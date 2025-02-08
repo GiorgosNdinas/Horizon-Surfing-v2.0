@@ -18,7 +18,7 @@ export class TeamMemberService {
   }
 
   async addTeamMember(teamMember: TeamMember){
-    const query = `INSERT INTO teamMember (name, surname, totalHoursTaught, hoursTaughtThisMonth, subject, profilePic) VALUES ('${teamMember.name}', '${teamMember.surname}', ${teamMember.totalHoursTaught}, ${teamMember.hoursTaughtThisMonth}, '${teamMember.subject}', '${teamMember.profilePic}')`;
+    const query = `INSERT INTO teamMember (name, surname, profilePic) VALUES ('${teamMember.name}', '${teamMember.surname}', '${teamMember.profilePic}')`;
     const result = await this.db.query(query);
     this.getTeamMembers();
   }

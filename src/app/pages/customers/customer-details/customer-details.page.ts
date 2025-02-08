@@ -1,7 +1,7 @@
+import { CustomerService } from './../../../servicies/customer.service';
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Input, OnInit, inject } from '@angular/core';
 import { IonAlert, IonBackButton, IonButton, IonButtons, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonRow, IonTitle, IonToolbar, IonInput } from '@ionic/angular/standalone';
-import { CustomerService } from 'src/app/servicies/customer.service';
 import { Customer } from 'src/app/models/customer.model';
 import { LessonsService } from 'src/app/servicies/lessons.service';
 import { CustomerFormComponent } from '../customer-form/customer-form.component';

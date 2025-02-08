@@ -34,9 +34,6 @@ import { LoadFilesService } from 'src/app/servicies/load-files.service';
                   <ion-item lines="none">
                     <h1>{{teamMember.name}} {{teamMember.surname}}</h1>
                   </ion-item>
-                  <ion-item lines="none">
-                    <h2>{{teamMember.subject}}</h2>
-                  </ion-item>
                 </ion-col>
               </ion-row>
             </ion-card>
