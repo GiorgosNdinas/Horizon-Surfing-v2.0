@@ -8,7 +8,7 @@ import { CustomerFormComponent } from '../customer-form/customer-form.component'
 import { ActivityListComponent } from "../../../components/activity-list/activity-list.component";
 import { ActivityService } from 'src/app/servicies/activity.service';
 import { Activity } from 'src/app/models/activity.modal';
-import { NewActivityComponent } from "../../../components/new-activity/new-activity.component";
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-customer-details',
@@ -53,10 +53,7 @@ import { NewActivityComponent } from "../../../components/new-activity/new-activ
     <ion-card>
       <ion-card-header class="my-bill-header">
         <ion-card-title>My Bill</ion-card-title>
-        <ion-button id="open-modal" >New activity</ion-button>
-        <ion-modal trigger="open-modal">
-          <app-new-activity></app-new-activity>
-        </ion-modal>
+        <ion-button [routerLink]="['./new-activity']" >New activity</ion-button>
       </ion-card-header>
       <ion-card-content>
         <app-activity-list [activities]="customerActivitiesForDisplay"  ></app-activity-list>
@@ -70,7 +67,6 @@ import { NewActivityComponent } from "../../../components/new-activity/new-activ
   imports: [
     CommonModule,
     IonHeader,
-    IonModal,
     IonToolbar,
     IonButtons,
     IonBackButton,
@@ -86,7 +82,7 @@ import { NewActivityComponent } from "../../../components/new-activity/new-activ
     IonCardContent,
     CustomerFormComponent,
     ActivityListComponent,
-    NewActivityComponent
+    RouterLink
 ]
 })
 export class CustomerDetailsPage implements OnInit {
