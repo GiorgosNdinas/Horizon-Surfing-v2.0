@@ -31,7 +31,7 @@
     "@capacitor/keyboard": "5.0.7",
     "@capacitor/splash-screen": "^5.0.7",
     "@capacitor/status-bar": "5.0.6",
-    "@ionic/angular": "^7.5.0",
+    "@ionic/angular": "^8.4.3",
     "angular2-signaturepad": "^4.0.2",
     "ionicons": "^7.2.2",
     "rxjs": "~7.8.0",

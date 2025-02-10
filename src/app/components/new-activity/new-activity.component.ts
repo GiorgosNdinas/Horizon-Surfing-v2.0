@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { IonButton, IonHeader, IonToolbar, IonTitle, IonButtons, IonContent, IonCard, IonCardContent, IonSegment, IonSegmentButton, IonLabel,  } from '@ionic/angular/standalone';
+import { IonButton, IonHeader, IonToolbar, IonTitle, IonButtons, IonContent, IonCard, IonCardContent, IonSegment, IonSegmentButton, IonLabel, IonSegmentView, IonSegmentContent } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-new-activity',
@@ -18,6 +18,8 @@ import { IonButton, IonHeader, IonToolbar, IonTitle, IonButtons, IonContent, Ion
     IonSegment,
     IonSegmentButton,
     IonLabel,
+    IonSegmentView,
+    IonSegmentContent,
   ],
   template: `
   <ion-header>
@@ -31,18 +33,18 @@ import { IonButton, IonHeader, IonToolbar, IonTitle, IonButtons, IonContent, Ion
   <ion-content>
     <ion-card>
       <ion-card-content>
-        <ion-segment>
-          <ion-segment-button content-id="lesson">
+        <ion-segment (ionChange)="onSegmentChange($event)">
+          <ion-segment-button content-id="lesson" value="lesson">
             <ion-label>Lesson</ion-label>
           </ion-segment-button>
-          <ion-segment-button content-id="rental">
+          <ion-segment-button content-id="rental" value="rental">
             <ion-label>Rental</ion-label>
           </ion-segment-button>
         </ion-segment>
-        <!-- <ion-segment-view>
+        <ion-segment-view>
           <ion-segment-content id="lesson">First</ion-segment-content>
           <ion-segment-content id="rental">Second</ion-segment-content>
-        </ion-segment-view> -->
+        </ion-segment-view>
       </ion-card-content>
     </ion-card>
   </ion-content>
@@ -60,5 +62,10 @@ export class NewActivityComponent implements OnInit {
 
   ngOnInit() {
     console.log('Current ID:', this.customerId);
+  }
+
+  // Handle the segment change event
+  onSegmentChange(event: CustomEvent) {
+    console.log('Segment changed', event.detail.value);
   }
 }
