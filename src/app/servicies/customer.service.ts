@@ -21,7 +21,7 @@ export class CustomerService {
 
   // Function that gets all the customers from the database.
   async getCustomers(){
-    const customers = await this.db.query('SELECT * FROM customer');
+    const customers = await this.db.query('SELECT * FROM customer ORDER BY id DESC');
     this.dbCustomers.set(customers.values || []);
     this.dbSearchCustomers.set(this.dbCustomers());
   }

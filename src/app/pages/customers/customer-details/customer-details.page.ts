@@ -1,13 +1,14 @@
 import { CustomerService } from './../../../servicies/customer.service';
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Input, OnInit, inject } from '@angular/core';
-import { IonAlert, IonBackButton, IonButton, IonButtons, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonRow, IonTitle, IonToolbar, IonInput } from '@ionic/angular/standalone';
+import { IonAlert, IonBackButton, IonButton, IonButtons, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonRow, IonTitle, IonToolbar, IonInput, IonModal } from '@ionic/angular/standalone';
 import { Customer } from 'src/app/models/customer.model';
 import { LessonsService } from 'src/app/servicies/lessons.service';
 import { CustomerFormComponent } from '../customer-form/customer-form.component';
 import { ActivityListComponent } from "../../../components/activity-list/activity-list.component";
 import { ActivityService } from 'src/app/servicies/activity.service';
 import { Activity } from 'src/app/models/activity.modal';
+import { NewActivityComponent } from "../../../components/new-activity/new-activity.component";
 
 @Component({
   selector: 'app-customer-details',
@@ -52,7 +53,10 @@ import { Activity } from 'src/app/models/activity.modal';
     <ion-card>
       <ion-card-header class="my-bill-header">
         <ion-card-title>My Bill</ion-card-title>
-        <ion-button>New activity</ion-button>
+        <ion-button id="open-modal" >New activity</ion-button>
+        <ion-modal trigger="open-modal">
+          <app-new-activity></app-new-activity>
+        </ion-modal>
       </ion-card-header>
       <ion-card-content>
         <app-activity-list [activities]="customerActivitiesForDisplay"  ></app-activity-list>
@@ -66,6 +70,7 @@ import { Activity } from 'src/app/models/activity.modal';
   imports: [
     CommonModule,
     IonHeader,
+    IonModal,
     IonToolbar,
     IonButtons,
     IonBackButton,
@@ -80,7 +85,8 @@ import { Activity } from 'src/app/models/activity.modal';
     IonCardTitle,
     IonCardContent,
     CustomerFormComponent,
-    ActivityListComponent
+    ActivityListComponent,
+    NewActivityComponent
 ]
 })
 export class CustomerDetailsPage implements OnInit {
@@ -106,7 +112,7 @@ export class CustomerDetailsPage implements OnInit {
   ];
 
   ngOnInit(): void {
-    this.customerForDisplay = this.customerService.dbCustomers()[this.id - 1];
+    this.customerForDisplay = this.customerService.dbCustomers().find((customer) => customer.id == Number(this.id))!;
     this.customerActivitiesForDisplay = this.getActivitiesForCustomer();
   }
 

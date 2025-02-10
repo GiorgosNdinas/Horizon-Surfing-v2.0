@@ -62,9 +62,14 @@ export class DatabaseService {
     );
     `;
 
+    const testApp = `
+    INSERT INTO customer (name, surname, homeAddress, hotel, hotelRoom, email, phoneNumber, departureDate, signature, terms, paid) VALUES ('John', 'Doe', '123 Main St', 'Hotel California', '123', 'a@a', '123456789', '2025-02-15', 'signature', 1, 0);
+    `;
+
     await this.db.execute(createTeamMemberSchema);
     await this.db.execute(createCustomerSchema);
     await this.db.execute(createActivitySchema);
+    await this.db.execute(testApp);
     
     return true;
   }
