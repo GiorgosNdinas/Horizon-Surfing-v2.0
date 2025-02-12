@@ -23,7 +23,7 @@ export class ActivityService {
    * @throws Will throw an error if the database query fails.
    */
   async addActivity(activity: Activity) {
-    const query = `INSERT INTO activity(customerId, name, type, duration, teamMemberId) VALUES (${activity.customerId}, '${activity.name}', '${activity.type}', '${activity.duration}', ${activity.teamMemberId})`;
+    const query = `INSERT INTO activity(customerId, name, type, amount, teamMemberId) VALUES (${activity.customerId}, '${activity.name}', '${activity.type}', '${activity.amount}', ${activity.teamMemberId})`;
     await this.db.query(query)
       .then(() => {
         console.log('Activity added successfully.');

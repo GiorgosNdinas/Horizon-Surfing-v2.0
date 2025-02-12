@@ -58,6 +58,7 @@ export class DatabaseService {
       customerId INTEGER,
       name TEXT NOT NULL,
       type TEXT NOT NULL,
+      amount TEXT NOT NULL,
       teamMemberId INTEGER
     );
     `;

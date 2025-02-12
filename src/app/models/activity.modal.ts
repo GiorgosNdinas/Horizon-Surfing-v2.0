@@ -3,6 +3,6 @@ export interface Activity {
   customerId: number,
   name: string,
   type: string,
-  duration: string,
+  amount: string,
   teamMemberId: number
 }

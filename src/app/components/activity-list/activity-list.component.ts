@@ -1,5 +1,6 @@
+import { TeamMemberService } from 'src/app/servicies/team-member.service';
 import { IonList, IonGrid, IonRow, IonCol } from '@ionic/angular/standalone';
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, inject } from '@angular/core';
 import { Activity } from 'src/app/models/activity.modal';
 
 @Component({
@@ -24,8 +25,8 @@ import { Activity } from 'src/app/models/activity.modal';
           <ion-row>
             <ion-col size="3">{{activity.name}}</ion-col>
             <ion-col size="3">{{activity.type}}</ion-col>
-            <ion-col size="4">{{activity.duration}}</ion-col>
-            <ion-col size="2">{{activity.teamMemberId}}</ion-col> <!-- TODO CHANGE SO IT SHOWS THE NAME OF THE MEMBER -->
+            <ion-col size="4">{{activity.amount}}</ion-col>
+            <ion-col size="2">{{getTeamMemberName(activity.teamMemberId)}}</ion-col>
           </ion-row>
         }
       </ion-grid>
@@ -36,4 +37,9 @@ import { Activity } from 'src/app/models/activity.modal';
 })
 export class ActivityListComponent {
   @Input() activities: Activity[] = [];
+  teamMemberService = inject(TeamMemberService);
+
+  getTeamMemberName(id: number) {
+    return this.teamMemberService.getTeamMemberName(Number(id));
+  }
  }

@@ -1,3 +1,4 @@
+import { Activity } from 'src/app/models/activity.modal';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
@@ -168,6 +169,7 @@ export class NewActivityComponent implements OnInit {
     this.activityForm.controls.amount.setValue(event.detail.value);
   }
 
+  // Reset the activity form fields
   restActivityForm() {
     this.activityForm.controls.name.setValue('');
     this.activityForm.controls.amount.setValue('');
@@ -179,6 +181,13 @@ export class NewActivityComponent implements OnInit {
       console.log('Invalid form');
       return;
     }
-    console.log(this.activityForm.value);
+    const activity: Activity ={
+      customerId: Number(this.customerId),
+      name: this.activityForm.controls.name.value!,
+      type: this.activityForm.controls.type.value!,
+      amount: this.activityForm.controls.amount.value!,
+      teamMemberId: Number(this.activityForm.controls.teamMemberId.value),
+    }
+    console.log('Activity:', activity);
   }
 }
