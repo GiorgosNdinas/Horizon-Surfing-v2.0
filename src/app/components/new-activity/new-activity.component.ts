@@ -36,7 +36,7 @@ import { IonButton, IonHeader, IonToolbar, IonTitle, IonButtons, IonContent, Ion
   <ion-content>
     <ion-card>
       <ion-card-content>
-        <ion-segment (ionChange)="onActivityTypeSegmentChange($event)" class="ion-margin-vertical">
+        <ion-segment [value]="activityForm.controls.type.value" (ionChange)="onActivityTypeSegmentChange($event)" class="ion-margin-vertical">
           <ion-segment-button content-id="lesson" value="lesson">
             <ion-label>Lesson</ion-label>
           </ion-segment-button>
@@ -51,7 +51,7 @@ import { IonButton, IonHeader, IonToolbar, IonTitle, IonButtons, IonContent, Ion
         <ion-segment-view>
           <!--******************* Lesson segment view  *******************-->
           <ion-segment-content id="lesson">
-            <ion-segment  class="ion-margin-vertical" (ionChange)="onActivityNameSegmentChange($event)">
+            <ion-segment [value]="activityForm.controls.name.value" class="ion-margin-vertical" (ionChange)="onActivityNameSegmentChange($event)">
             @for(activity of this.activities; track $index){
               <ion-segment-button value="{{activity.value}}">
                 <ion-label>{{activity.name}}</ion-label>
@@ -59,11 +59,11 @@ import { IonButton, IonHeader, IonToolbar, IonTitle, IonButtons, IonContent, Ion
             }
             </ion-segment>
             <ion-item class="ion-margin-vertical">
-              <ion-input label="Amount:" fill="soild" labelPlacement="stacked" placeholder="Example: 1 hour private" (ionChange)="onAmountInputChange($event)"></ion-input>
+              <ion-input [value]="activityForm.controls.amount.value" label="Amount:" fill="soild" labelPlacement="stacked" placeholder="Example: 1 hour private" (ionChange)="onAmountInputChange($event)"></ion-input>
             </ion-item>
             <!--******************* Segment team memeber *******************-->
             <ion-label class="ion-margin">Team member</ion-label>
-            <ion-segment class="ion-margin-vertical" (ionChange)="onTeamMemberSegmentChange($event)">
+            <ion-segment [value]="activityForm.controls.teamMemberId.value" class="ion-margin-vertical" (ionChange)="onTeamMemberSegmentChange($event)">
               @for(teamMember of this.teamMembers; track $index){
                 <ion-segment-button value="{{teamMember.id}}">
                   <ion-label>{{teamMember.name}}</ion-label>
@@ -73,7 +73,7 @@ import { IonButton, IonHeader, IonToolbar, IonTitle, IonButtons, IonContent, Ion
           </ion-segment-content>
           <!--******************* Rental segment view  *******************-->
           <ion-segment-content id="rental">
-            <ion-segment  class="ion-margin-vertical" (ionChange)="onActivityNameSegmentChange($event)">
+            <ion-segment [value]="activityForm.controls.name.value" class="ion-margin-vertical" (ionChange)="onActivityNameSegmentChange($event)">
               @for(activity of this.activities; track $index){
                 <ion-segment-button value="{{activity.value}}">
                   <ion-label>{{activity.name}}</ion-label>
@@ -81,12 +81,12 @@ import { IonButton, IonHeader, IonToolbar, IonTitle, IonButtons, IonContent, Ion
               }
             </ion-segment>
             <ion-item class="ion-margin-vertical">
-              <ion-input label="Amount:" fill="soild" labelPlacement="stacked" placeholder="Example: 1 day" (ionChange)="onAmountInputChange($event)"></ion-input>
+              <ion-input [value]="activityForm.controls.amount.value" label="Amount:" fill="soild" labelPlacement="stacked" placeholder="Example: 1 day" (ionChange)="onAmountInputChange($event)"></ion-input>
             </ion-item>
           </ion-segment-content>
           <!--******************* Other segment view  *******************-->
           <ion-segment-content id="other">
-            <ion-segment class="ion-margin-vertical" (ionChange)="onActivityNameSegmentChange($event)">
+            <ion-segment [value]="activityForm.controls.name.value" class="ion-margin-vertical" (ionChange)="onActivityNameSegmentChange($event)">
               @for(otherActivity of this.otherActivities; track $index){
                 <ion-segment-button value="{{otherActivity.value}}">
                   <ion-label>{{otherActivity.name}}</ion-label>
@@ -94,7 +94,7 @@ import { IonButton, IonHeader, IonToolbar, IonTitle, IonButtons, IonContent, Ion
               }
             </ion-segment>
             <ion-item class="ion-margin-vertical">
-              <ion-input label="Amount:" fill="soild" labelPlacement="stacked" placeholder="Example: 1 day insurance" (ionChange)="onAmountInputChange($event)"></ion-input>
+              <ion-input [value]="activityForm.controls.amount.value" label="Amount:" fill="soild" labelPlacement="stacked" placeholder="Example: 1 day insurance" (ionChange)="onAmountInputChange($event)"></ion-input>
             </ion-item>
           </ion-segment-content>
         </ion-segment-view>
@@ -150,6 +150,7 @@ export class NewActivityComponent implements OnInit {
   // Handle the activity type segment change event
   onActivityTypeSegmentChange(event: CustomEvent) {
     this.activityForm.controls.type.setValue(event.detail.value);
+    this.restActivityForm();
   }
 
   // Handle the activity name segment change event
@@ -165,6 +166,12 @@ export class NewActivityComponent implements OnInit {
   // Handle the amount input change event
   onAmountInputChange(event: CustomEvent) {
     this.activityForm.controls.amount.setValue(event.detail.value);
+  }
+
+  restActivityForm() {
+    this.activityForm.controls.name.setValue('');
+    this.activityForm.controls.amount.setValue('');
+    this.activityForm.controls.teamMemberId.setValue(-1);
   }
 
   onSubmit(){
