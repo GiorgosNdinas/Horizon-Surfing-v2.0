@@ -17,17 +17,17 @@ import { ActivityService } from 'src/app/servicies/activity.service';
     <ion-list>
       <ion-grid>
         <ion-row style="border-bottom: 1px solid;">
-          <ion-col size="3">Activity</ion-col>
-          <ion-col size="3">Type</ion-col>
-          <ion-col size="4">Duration</ion-col>
-          <ion-col size="2">Team</ion-col>
+          <ion-col size="3" >Activity</ion-col>
+          <ion-col size="3" >Type</ion-col>
+          <ion-col size="4" >Duration</ion-col>
+          <ion-col size="2" >Team</ion-col>
         </ion-row>
         @for(activity of this.activitiesForCustomer(); track $index){
           <ion-row>
-            <ion-col size="3">{{activity.name}}</ion-col>
-            <ion-col size="3">{{activity.type}}</ion-col>
-            <ion-col size="4">{{activity.amount}}</ion-col>
-            <ion-col size="2">{{getTeamMemberName(activity.teamMemberId)}}</ion-col>
+            <ion-col size="3" >{{capializeString(activity.name)}}</ion-col>
+            <ion-col size="3" >{{capializeString(activity.type)}}</ion-col>
+            <ion-col size="4" >{{activity.amount}}</ion-col>
+            <ion-col size="2" >{{getTeamMemberName(activity.teamMemberId)}}</ion-col>
           </ion-row>
         }
       </ion-grid>
@@ -47,5 +47,9 @@ export class ActivityListComponent implements OnInit {
 
   getTeamMemberName(id: number) {
     return this.teamMemberService.getTeamMemberName(Number(id));
+  }
+
+  capializeString(str: string) {
+    return str.charAt(0).toUpperCase() + str.slice(1);
   }
  }
