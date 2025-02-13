@@ -10,9 +10,9 @@ import { TeamMemberService } from "./team-member.service";
 export class ActivityService {
   private db: SQLiteDBConnection = this.databaseService.getDatabaseConnection();
 
-  dbActivities = signal<Activity[]>([]);
+  dbActivitiesForCustomer = signal<Activity[]>([]);
 
-  constructor(private databaseService: DatabaseService, private teamMemberService: TeamMemberService) { }
+  constructor(private databaseService: DatabaseService) { }
 
   /**
    * Adds a new activity to the database.
@@ -44,12 +44,7 @@ export class ActivityService {
    */
   async getActivityForCustomer(customerId: number) {
     const query = `SELECT * FROM activity WHERE customerId = ${customerId}`;
-    try {
-      const result = await this.db.query(query);
-      return result.values as Activity[];
-    } catch (error) {
-      console.error('Error fetching activities for customer:', error);
-      throw error;
-    }
+    const activitiesForCustomer = await this.db.query(query);
+    this.dbActivitiesForCustomer.set(activitiesForCustomer.values || []);
   }
 }

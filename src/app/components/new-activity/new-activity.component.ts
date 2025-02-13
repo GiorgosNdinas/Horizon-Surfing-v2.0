@@ -1,8 +1,11 @@
+import { TeamMemberService } from 'src/app/servicies/team-member.service';
 import { Activity } from 'src/app/models/activity.modal';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { IonButton, IonHeader, IonToolbar, IonTitle, IonButtons, IonContent, IonCard, IonCardContent, IonSegment, IonSegmentButton, IonLabel, IonSegmentView, IonSegmentContent, IonItem, IonInput, IonRow, IonAlert } from '@ionic/angular/standalone';
+import { TeamMember } from 'src/app/models/team-members.modal';
+import { ActivityService } from 'src/app/servicies/activity.service';
 
 @Component({
   selector: 'app-new-activity',
@@ -64,13 +67,20 @@ import { IonButton, IonHeader, IonToolbar, IonTitle, IonButtons, IonContent, Ion
             </ion-item>
             <!--******************* Segment team memeber *******************-->
             <ion-label class="ion-margin">Team member</ion-label>
-            <ion-segment [value]="activityForm.controls.teamMemberId.value" class="ion-margin-vertical" (ionChange)="onTeamMemberSegmentChange($event)">
+            @if(teamMembers.length === 0){
+              <br>
+              <br>
+              <ion-label class="ion-margin">Add teamember or refresh the app.</ion-label>
+            }
+            @if(teamMembers.length > 0){
+              <ion-segment [value]="activityForm.controls.teamMemberId.value" class="ion-margin-vertical" (ionChange)="onTeamMemberSegmentChange($event)">
               @for(teamMember of this.teamMembers; track $index){
                 <ion-segment-button value="{{teamMember.id}}">
                   <ion-label>{{teamMember.name}}</ion-label>
                 </ion-segment-button>
               }
             </ion-segment> 
+            }
           </ion-segment-content>
           <!--******************* Rental segment view  *******************-->
           <ion-segment-content id="rental">
@@ -109,7 +119,9 @@ import { IonButton, IonHeader, IonToolbar, IonTitle, IonButtons, IonContent, Ion
 })
 export class NewActivityComponent implements OnInit {
   customerId: number;
-  
+
+  teamMembers: TeamMember[];
+
   activities = [
     { name: 'Kitesurfing', value: 'kitesurfing' },
     { name: 'Windsurfing', value: 'windsurfing' },
@@ -124,14 +136,6 @@ export class NewActivityComponent implements OnInit {
     { name: 'Other', value: 'other' },
   ];
 
-  teamMembers = [
-    { name: 'John Doe', id: 1 },
-    { name: 'Jane Doe', id: 2 },
-    { name: 'John Smith', id: 3 },
-    { name: 'Jane Smith', id: 4 },
-    { name: 'John Johnson', id: 5 },
-  ]
-
   activityForm = new FormGroup({
     name: new FormControl('', Validators.required),
     type: new FormControl('lesson', Validators.required),
@@ -139,9 +143,10 @@ export class NewActivityComponent implements OnInit {
     teamMemberId: new FormControl(-1),
   });
 
-  constructor(private route: ActivatedRoute, private cdr: ChangeDetectorRef) {
+  constructor(private route: ActivatedRoute, private teamMemberService: TeamMemberService, private activityService: ActivityService, private router: Router) {
     // Extract the customer ID from the URL. Url example: /1/new-activity
     this.customerId = Number(this.route.snapshot.url.join('/').split('/')[0]);
+    this.teamMembers = this.teamMemberService.dbTeamMembers();
   }
 
   ngOnInit() {
@@ -176,18 +181,24 @@ export class NewActivityComponent implements OnInit {
     this.activityForm.controls.teamMemberId.setValue(-1);
   }
 
-  onSubmit(){
-    if(!this.activityForm.valid){
-      console.log('Invalid form');
-      return;
-    }
-    const activity: Activity ={
+  onSubmit() {
+    if (!this.activityForm.valid) return;
+    if (this.activityForm.controls.type.value === 'lesson' && this.activityForm.controls.teamMemberId.value == -1) return;
+
+    const activity: Activity = {
       customerId: Number(this.customerId),
       name: this.activityForm.controls.name.value!,
       type: this.activityForm.controls.type.value!,
       amount: this.activityForm.controls.amount.value!,
       teamMemberId: Number(this.activityForm.controls.teamMemberId.value),
     }
-    console.log('Activity:', activity);
+
+    this.activityService.addActivity(activity).then(() => {
+      this.restActivityForm();
+      this.activityService.getActivityForCustomer(this.customerId);
+      this.router.navigate(['../'], { relativeTo: this.route });
+    }).catch((error) => {
+      console.error('Error adding activity:', error);
+    });
   }
 }

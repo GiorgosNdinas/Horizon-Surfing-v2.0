@@ -1,14 +1,14 @@
+import { Activity } from './../../../models/activity.modal';
 import { CustomerService } from './../../../servicies/customer.service';
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, Input, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnInit, computed, inject } from '@angular/core';
 import { IonAlert, IonBackButton, IonButton, IonButtons, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonRow, IonTitle, IonToolbar, IonInput, IonModal } from '@ionic/angular/standalone';
 import { Customer } from 'src/app/models/customer.model';
 import { LessonsService } from 'src/app/servicies/lessons.service';
 import { CustomerFormComponent } from '../customer-form/customer-form.component';
 import { ActivityListComponent } from "../../../components/activity-list/activity-list.component";
-import { ActivityService } from 'src/app/servicies/activity.service';
-import { Activity } from 'src/app/models/activity.modal';
 import { RouterLink } from '@angular/router';
+import { ActivityService } from 'src/app/servicies/activity.service';
 
 @Component({
   selector: 'app-customer-details',
@@ -56,7 +56,7 @@ import { RouterLink } from '@angular/router';
         <ion-button [routerLink]="['./new-activity']" >New activity</ion-button>
       </ion-card-header>
       <ion-card-content>
-        <app-activity-list [activities]="customerActivitiesForDisplay"  ></app-activity-list>
+        <app-activity-list [activitiesForCustomer]="customerActivitiesForDisplay"  ></app-activity-list>
       </ion-card-content>
     </ion-card>
     <ion-item></ion-item>
@@ -88,12 +88,15 @@ import { RouterLink } from '@angular/router';
 export class CustomerDetailsPage implements OnInit {
   @Input() id!: number;
 
-  customerService = inject(CustomerService);
   lessonsService = inject(LessonsService);
-  activityService = inject(ActivityService);
+  customerService = inject(CustomerService);
+  activitiesService = inject(ActivityService);
+
 
   customerForDisplay!: Customer;
-  customerActivitiesForDisplay: Activity[] = [];
+  customerActivitiesForDisplay = computed<Activity[]>(() => {
+    return this.activitiesService.dbActivitiesForCustomer();
+  });
   
 
   public alertButtons = [
@@ -109,26 +112,7 @@ export class CustomerDetailsPage implements OnInit {
 
   ngOnInit(): void {
     this.customerForDisplay = this.customerService.dbCustomers().find((customer) => customer.id == Number(this.id))!;
-    this.customerActivitiesForDisplay = this.getActivitiesForCustomer();
-  }
-
-  /**
-   * Retrieves activities for a specific customer.
-   *
-   * This method fetches activities associated with the customer identified by `customerForDisplay.id`.
-   * It uses the `activityService` to get the activities and handles the result or any errors that may occur.
-   *
-   * @returns {Array} An empty array is returned immediately, but the actual activities are handled asynchronously.
-   */
-  getActivitiesForCustomer(){
-    this.activityService.getActivityForCustomer(this.customerForDisplay.id!)
-    .then((result) => {
-      return result.values;
-    }).catch((error) => {
-      console.error(error);
-      console.error(error)
-    }).finally(() => {});
-    return []
+    this.activitiesService.getActivityForCustomer(this.id);
   }
 
   updateCustomerPayment(ev: any) {

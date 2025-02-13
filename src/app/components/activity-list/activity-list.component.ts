@@ -1,7 +1,8 @@
 import { TeamMemberService } from 'src/app/servicies/team-member.service';
 import { IonList, IonGrid, IonRow, IonCol } from '@ionic/angular/standalone';
-import { ChangeDetectionStrategy, Component, Input, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnInit, Signal, inject } from '@angular/core';
 import { Activity } from 'src/app/models/activity.modal';
+import { ActivityService } from 'src/app/servicies/activity.service';
 
 @Component({
   selector: 'app-activity-list',
@@ -21,7 +22,7 @@ import { Activity } from 'src/app/models/activity.modal';
           <ion-col size="4">Duration</ion-col>
           <ion-col size="2">Team</ion-col>
         </ion-row>
-        @for(activity of this.activities; track $index){
+        @for(activity of this.activitiesForCustomer(); track $index){
           <ion-row>
             <ion-col size="3">{{activity.name}}</ion-col>
             <ion-col size="3">{{activity.type}}</ion-col>
@@ -35,9 +36,14 @@ import { Activity } from 'src/app/models/activity.modal';
   styleUrl: './activity-list.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ActivityListComponent {
-  @Input() activities: Activity[] = [];
+export class ActivityListComponent implements OnInit {
+  @Input() activitiesForCustomer!: Signal<Activity[]>;
   teamMemberService = inject(TeamMemberService);
+
+
+  ngOnInit() {
+    console.log('Customer id', this.activitiesForCustomer);
+  }
 
   getTeamMemberName(id: number) {
     return this.teamMemberService.getTeamMemberName(Number(id));
