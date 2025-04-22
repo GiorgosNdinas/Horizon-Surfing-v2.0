@@ -31,16 +31,14 @@ import { TeamMemberService } from 'src/app/servicies/team-member.service';
   imports: [IonContent, IonImg, IonItem, IonLabel, IonButton],
 })
 export class HomePage {
-  // Router injection
-
+  // Injecting the services needed for the page
   constructor(private router: Router, private customerService: CustomerService,private teamMemberService: TeamMemberService, private loadFilesService: LoadFilesService, private lessonsService: LessonsService){
-    this.customerService.getCustomers();
+    this.customerService.getUnpaidCustomers();
     this.teamMemberService.getTeamMembers();
     this.lessonsService.getLessons();
     this.loadFilesService.loadFiles();
   }
 
-  // customers = this.customerService.dbCustomers();
 
   // Function to navigate depending on wich button is pressed
   navigateToPage(page: string) {

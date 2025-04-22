@@ -37,7 +37,7 @@ import { Router } from '@angular/router';
 export class CustomersPage {
   
   constructor(private router: Router, private customerService: CustomerService){
-    this.customerService.getCustomers(); // Test this
+    this.customerService.getUnpaidCustomers(); // Test this
   }
   navigateToPage(page:string){
     this.router.navigate([`customers/${page}`]);
