@@ -40,6 +40,7 @@ import { ActivityService } from 'src/app/servicies/activity.service';
   <ion-content>
     <ion-card>
       <ion-card-content>
+        <!-- Activity type segment -->
         <ion-segment [value]="activityForm.controls.type.value" (ionChange)="onActivityTypeSegmentChange($event)" class="ion-margin-vertical">
           <ion-segment-button content-id="lesson" value="lesson">
             <ion-label>Lesson</ion-label>
@@ -51,21 +52,19 @@ import { ActivityService } from 'src/app/servicies/activity.service';
             <ion-label>Other</ion-label>
           </ion-segment-button>
         </ion-segment>
-        <!--******************* Segment view *******************-->
-        <ion-segment-view>
-          <!--******************* Lesson segment view  *******************-->
-          <ion-segment-content id="lesson">
-            <ion-segment [value]="activityForm.controls.name.value" class="ion-margin-vertical" (ionChange)="onActivityNameSegmentChange($event)">
+        
+        <!-- Segment for lesson type activities -->
+        @if(this.activityForm.controls.type.value === 'lesson'){
+          <ion-segment [value]="activityForm.controls.name.value" class="ion-margin-vertical" (ionChange)="onActivityNameSegmentChange($event)">
             @for(activity of this.activities; track $index){
               <ion-segment-button value="{{activity.value}}">
-                <ion-label>{{activity.name}}</ion-label>
+                <ion-label expand="full">{{activity.name}}</ion-label>
               </ion-segment-button> 
             }
-            </ion-segment>
-            <ion-item class="ion-margin-vertical">
+          </ion-segment>
+          <ion-item class="ion-margin-vertical">
               <ion-input [value]="activityForm.controls.amount.value" label="Amount:" fill="soild" labelPlacement="stacked" placeholder="Example: 1 hour private" (ionChange)="onAmountInputChange($event)"></ion-input>
             </ion-item>
-            <!--******************* Segment team memeber *******************-->
             <ion-label class="ion-margin">Team member</ion-label>
             @if(teamMembers.length === 0){
               <br>
@@ -79,12 +78,11 @@ import { ActivityService } from 'src/app/servicies/activity.service';
                   <ion-label>{{teamMember.name}}</ion-label>
                 </ion-segment-button>
               }
-            </ion-segment> 
+              </ion-segment>
             }
-          </ion-segment-content>
-          <!--******************* Rental segment view  *******************-->
-          <ion-segment-content id="rental">
-            <ion-segment [value]="activityForm.controls.name.value" class="ion-margin-vertical" (ionChange)="onActivityNameSegmentChange($event)">
+          }
+        @if(this.activityForm.controls.type.value === 'rental'){
+          <ion-segment [value]="activityForm.controls.name.value" class="ion-margin-vertical" (ionChange)="onActivityNameSegmentChange($event)">
               @for(activity of this.activities; track $index){
                 <ion-segment-button value="{{activity.value}}">
                   <ion-label>{{activity.name}}</ion-label>
@@ -94,10 +92,10 @@ import { ActivityService } from 'src/app/servicies/activity.service';
             <ion-item class="ion-margin-vertical">
               <ion-input [value]="activityForm.controls.amount.value" label="Amount:" fill="soild" labelPlacement="stacked" placeholder="Example: 1 day" (ionChange)="onAmountInputChange($event)"></ion-input>
             </ion-item>
-          </ion-segment-content>
-          <!--******************* Other segment view  *******************-->
-          <ion-segment-content id="other">
-            <ion-segment [value]="activityForm.controls.name.value" class="ion-margin-vertical" (ionChange)="onActivityNameSegmentChange($event)">
+        }
+
+        @if(this.activityForm.controls.type.value === 'other'){
+          <ion-segment [value]="activityForm.controls.name.value" class="ion-margin-vertical" (ionChange)="onActivityNameSegmentChange($event)">
               @for(otherActivity of this.otherActivities; track $index){
                 <ion-segment-button value="{{otherActivity.value}}">
                   <ion-label>{{otherActivity.name}}</ion-label>
@@ -107,8 +105,7 @@ import { ActivityService } from 'src/app/servicies/activity.service';
             <ion-item class="ion-margin-vertical">
               <ion-input [value]="activityForm.controls.amount.value" label="Amount:" fill="soild" labelPlacement="stacked" placeholder="Example: 1 day insurance" (ionChange)="onAmountInputChange($event)"></ion-input>
             </ion-item>
-          </ion-segment-content>
-        </ion-segment-view>
+        }        
         <ion-button expand="full" (click)="onSubmit()">Save</ion-button>
       </ion-card-content>
     </ion-card>
