@@ -13,6 +13,10 @@ export const routes: Routes = [
     path: 'team',
     loadChildren: () => import('./pages/team/team.routes').then((m) => m.teamRoutes)
   },
+  {
+    path: 'admin',
+    loadChildren: () => import('./pages/admin/admin.routes').then((m) => m.adminRoutes)
+  },
   // {
   //   path: 'terms',
   //   loadComponent: () => import('./components/terms-of-service/terms-of-service.component').then((m) => m.TermsOfServiceComponent)

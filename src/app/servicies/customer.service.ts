@@ -16,7 +16,6 @@ export class CustomerService {
   dbSearchCustomers = signal<Customer[]>(this.dbCustomers());
 
 
-
   constructor(private databaseService: DatabaseService) {}
 
   // Function that gets all the customers from the database.

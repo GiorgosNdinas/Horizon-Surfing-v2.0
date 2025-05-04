@@ -1,16 +1,16 @@
 import { ChangeDetectionStrategy, Component, ViewChild } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { IonAvatar, IonBackButton, IonButton, IonButtons, IonCard, IonCol, IonContent, IonGrid, IonHeader, IonItem, IonModal, IonRow, IonTitle, IonToolbar } from '@ionic/angular/standalone';
+import { IonAvatar, IonBackButton, IonButton, IonButtons, IonCard, IonCol, IonContent, IonGrid, IonHeader, IonItem, IonModal, IonRow, IonTitle, IonToolbar, IonAlert } from '@ionic/angular/standalone';
 import { TeamMemberFormComponent } from "./team-components/team-member-form/team-member-form.component";
-import { OverlayEventDetail } from '@ionic/core/components';
+import { AlertInput, OverlayEventDetail } from '@ionic/core/components';
 import { TeamMemberService } from 'src/app/servicies/team-member.service';
 import { TeamMember } from 'src/app/models/team-members.modal';
 import { LoadFilesService } from 'src/app/servicies/load-files.service';
 
 @Component({
-    selector: 'app-team',
-    standalone: true,
-    template: `
+  selector: 'app-team',
+  standalone: true,
+  template: `
     <ion-header>
       <ion-toolbar>
         <ion-buttons slot="start" >
@@ -22,6 +22,33 @@ import { LoadFilesService } from 'src/app/servicies/load-files.service';
     <ion-content>
       <ion-grid>
         <div class="grid-container">
+          <!--  Admin card -->
+          <ion-card id ="admin-login-alert">
+            <ion-row>
+              <ion-col size="3">
+                <ion-avatar aria-hidden="true">
+                  <img src="./assets/Logo.png" />
+                </ion-avatar>
+              </ion-col>
+              <ion-col size="9">
+                  <ion-item lines="none">
+                    <h1>Admin User</h1>
+                  </ion-item>
+                  <ion-item lines="none">
+                    <h2>Login</h2>
+                  </ion-item>
+                </ion-col>
+            </ion-row>
+          </ion-card>
+          <!-- Admin alert -->
+          <ion-alert
+            trigger="admin-login-alert"
+            header="Admin Login"
+            message="Please enter your password to access the admin panel."
+            [inputs]="adminPasswordInput"
+            [buttons]="adminPasswordButton"
+          ></ion-alert>
+          <!--  Team members cards -->
           @for(teamMember of this.teamMemberService.dbTeamMembers(); track $index){
             <ion-card [routerLink]="[teamMember.id]">
               <ion-row>
@@ -74,7 +101,7 @@ import { LoadFilesService } from 'src/app/servicies/load-files.service';
       </ion-grid>
     </ion-content>
   `,
-    styles: `
+  styles: `
     .grid-container{
       display: grid;
       grid-template-columns: auto auto;
@@ -98,30 +125,57 @@ import { LoadFilesService } from 'src/app/servicies/load-files.service';
       }
     }
   `,
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [
-        RouterLink,
-        IonHeader,
-        IonToolbar,
-        IonButton,
-        IonButtons,
-        IonBackButton,
-        IonTitle,
-        IonContent,
-        IonGrid,
-        IonRow,
-        IonCol,
-        IonAvatar,
-        IonItem,
-        IonCard,
-        IonModal,
-        TeamMemberFormComponent
-    ]
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    RouterLink,
+    IonHeader,
+    IonToolbar,
+    IonButton,
+    IonButtons,
+    IonBackButton,
+    IonTitle,
+    IonContent,
+    IonGrid,
+    IonRow,
+    IonCol,
+    IonAvatar,
+    IonItem,
+    IonCard,
+    IonModal,
+    IonAlert,
+    TeamMemberFormComponent
+  ]
 })
 export class TeamPage {
   @ViewChild(IonModal) modal!: IonModal;
-  
-  constructor(public teamMemberService: TeamMemberService, private loadFilesService: LoadFilesService) { }
+
+  public adminPasswordInput = [
+    {
+      name: 'password',
+      placeholder: 'Password',
+      type: 'password',
+    }
+  ];
+
+  public adminPasswordButton = [
+    {
+      text: 'Login',
+      handler: (event:any) => {
+        const password = event.password;
+        // Check if the password is correct
+        if (password === 'admin') {
+          this.router.navigate(['/admin']);
+          console.log('Correct password');
+        } else {
+          console.log('Wrong password');
+          return false; // Prevent the alert from closing
+        }
+        return true; // Prevent the alert from closing
+      }
+    }
+  ]
+
+  constructor(public teamMemberService: TeamMemberService, private loadFilesService: LoadFilesService, private router: Router) { }
 
   // Close the customer modal with a 'cancel' action
   cancel() {
@@ -146,12 +200,12 @@ export class TeamPage {
     }
   }
 
-  getProfilePic(teamMember: TeamMember){
+  getProfilePic(teamMember: TeamMember) {
     const index = this.loadFilesService.images.findIndex(image => image.name === teamMember.profilePic);
 
-    if (index !== -1){
+    if (index !== -1) {
       return this.loadFilesService.images[index].data;
-    }else{
+    } else {
       return "https://ionicframework.com/docs/img/demos/avatar.svg";
     }
   }
