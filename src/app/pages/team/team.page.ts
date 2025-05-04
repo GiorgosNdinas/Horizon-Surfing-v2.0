@@ -163,13 +163,15 @@ export class TeamPage {
       handler: (event:any) => {
         const password = event.password;
         // Check if the password is correct
-        if (password === 'admin') {
-          this.router.navigate(['/admin']);
-          console.log('Correct password');
-        } else {
-          console.log('Wrong password');
-          return false; // Prevent the alert from closing
-        }
+        // if (password === 'admin') {
+        //   this.router.navigate(['/admin']);
+        //   console.log('Correct password');
+        // } else {
+        //   console.log('Wrong password');
+        //   return false; // Prevent the alert from closing
+        // }
+        this.router.navigate(['/admin']);
+
         return true; // Prevent the alert from closing
       }
     }
