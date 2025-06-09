@@ -5,11 +5,6 @@ ion-card {
   border-radius: 50%;
 }
 
-ion-title {
-  text-align: center;
-  margin-top: 10px;
-}
-
 ion-card-content {
   padding: 0;
 }

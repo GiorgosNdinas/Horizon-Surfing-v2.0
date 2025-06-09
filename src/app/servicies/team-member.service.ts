@@ -32,6 +32,15 @@ export class TeamMemberService {
   }
 
   /**
+   * Updates an existing team member in the database and refreshes the team members list.
+   * @param teamMember - The team member object with updated data.
+   */
+  async updateTeamMember(teamMember: TeamMember){
+    const query = `UPDATE teamMember SET name = '${teamMember.name}', surname = '${teamMember.surname}', profilePic = '${teamMember.profilePic}' WHERE id = ${teamMember.id}`;
+    const result = await this.db.query(query);
+    this.getTeamMembers();
+  }
+  /**
    * Marks a team member as deleted in the database and refreshes the team members list.
    * @param teamMember - The team member object to be marked as deleted.
    */

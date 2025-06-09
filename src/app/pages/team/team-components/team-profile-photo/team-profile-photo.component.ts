@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { IonButton, IonCard, IonCardContent, IonIcon, IonImg, IonTitle, Platform } from '@ionic/angular/standalone';
 import { Camera, CameraResultType, CameraSource, ImageOptions, Photo } from "@capacitor/camera"
 import { LoadFilesService } from 'src/app/servicies/load-files.service';
@@ -14,7 +14,6 @@ const IMAGE_DIR = 'stored-images';
   standalone: true,
   imports: [
     CommonModule,
-    IonTitle,
     IonCard,
     IonCardContent,
     IonImg,
@@ -22,9 +21,6 @@ const IMAGE_DIR = 'stored-images';
     IonIcon
   ],
   template: `
-  <ion-title>
-    Profile picture
-  </ion-title>
   <ion-card (click) = "selectImage()">
     <ion-card-content>
       <ion-img [src]="defaultPicture"></ion-img>
@@ -39,14 +35,15 @@ const IMAGE_DIR = 'stored-images';
 })
 export class TeamProfilePhotoComponent implements OnInit {
 
+  @Input() defaultPicture: Blob | string = "https://ionicframework.com/docs/img/demos/avatar.svg";
   @Output() profilePicture = new EventEmitter<string>();
 
-  defaultPicture: string = "https://ionicframework.com/docs/img/demos/avatar.svg";
-
+  // private loadFilesService = inject(LoadFilesService);
   constructor(private platform: Platform, private loadFilesService: LoadFilesService){
   }
 
   ngOnInit(): void {
+    console.log('Default picture:', this.defaultPicture);
     Camera.requestPermissions({ permissions: ['photos'] });
     this.loadFilesService.loadFiles();
   }

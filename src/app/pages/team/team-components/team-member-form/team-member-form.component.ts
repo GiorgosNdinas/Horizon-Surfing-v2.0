@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { IonButton, IonCol, IonGrid, IonInput, IonItem, IonRow, IonSelect, IonSelectOption, ModalController } from '@ionic/angular/standalone';
+import { IonButton, IonCol, IonGrid, IonInput, IonItem, IonRow, IonSelect, IonSelectOption, ModalController, IonTitle } from '@ionic/angular/standalone';
 import { TeamMember } from 'src/app/models/team-members.modal';
 import { TeamMemberService } from 'src/app/servicies/team-member.service';
 import { TeamProfilePhotoComponent } from "../team-profile-photo/team-profile-photo.component";
@@ -11,6 +11,9 @@ import { DatabaseService } from 'src/app/servicies/database.service';
   selector: 'app-team-member-form',
   standalone: true,
   template: `
+  <ion-title>
+    Profile picture
+  </ion-title>
   <app-team-profile-photo (profilePicture)="handleProfilePicture($event)"></app-team-profile-photo>
   <form [formGroup] = "teamMemberForm">
     <ion-grid>
@@ -53,7 +56,8 @@ import { DatabaseService } from 'src/app/servicies/database.service';
     IonCol,
     IonInput,
     IonButton,
-    TeamProfilePhotoComponent
+    TeamProfilePhotoComponent,
+    IonTitle
   ]
 })
 export class TeamMemberFormComponent {

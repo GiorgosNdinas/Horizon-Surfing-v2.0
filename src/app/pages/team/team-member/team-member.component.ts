@@ -1,13 +1,12 @@
 import { OverlayEventDetail } from '@ionic/core/components';
-import { ChangeDetectionStrategy, Component, Input, OnInit, ViewChild, WritableSignal, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnInit, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { IonAlert, IonAvatar, IonBackButton, IonButton, IonButtons, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonCol, IonContent, IonHeader, IonIcon, IonItem, IonModal, IonRow, IonTitle, IonToolbar } from '@ionic/angular/standalone';
 import { TeamMember } from 'src/app/models/team-members.modal';
 import { TeamMemberService } from 'src/app/servicies/team-member.service';
-import { CustomerService } from 'src/app/servicies/customer.service';
 import { Location } from '@angular/common';
-import { Customer } from 'src/app/models/customer.model';
 import { LoadFilesService } from 'src/app/servicies/load-files.service';
+import { TeamProfilePhotoComponent } from "../team-components/team-profile-photo/team-profile-photo.component";
 @Component({
   selector: 'app-team-member',
   standalone: true,
@@ -21,11 +20,12 @@ import { LoadFilesService } from 'src/app/servicies/load-files.service';
     IonCard,
     IonRow,
     IonCol,
-    IonAvatar,
+    // IonAvatar,
     IonItem,
     IonButton,
     IonIcon,
-    IonAlert
+    IonAlert,
+    TeamProfilePhotoComponent
   ],
   template: ` 
   <ion-header>
@@ -41,9 +41,10 @@ import { LoadFilesService } from 'src/app/servicies/load-files.service';
       <ion-card>
         <ion-row>
           <ion-col size="4">
-            <ion-avatar aria-hidden="true">
+            <!-- <ion-avatar aria-hidden="true">
               <img  [src]="getProfilePic()" />
-            </ion-avatar>
+            </ion-avatar> -->
+            <app-team-profile-photo [defaultPicture]="getProfilePic(this.teamMember()!.profilePic)" (profilePicture)="handleProfilePicture($event)"></app-team-profile-photo>
           </ion-col>
           <ion-col size="8">
             <ion-item lines="none">
@@ -122,25 +123,37 @@ export class TeamMemberComponent implements OnInit {
   findTeamMember() {
     const index = this.teamMemberService.dbTeamMembers().findIndex(item => item.id == this.id)
     if (index !== -1)
-      this.teamMember.set(this.teamMemberService.dbTeamMembers()[index]) ;
+      this.teamMember.set(this.teamMemberService.dbTeamMembers()[index]);
   }
 
   deleteTeamMember(ev: any) {
-    if (ev.detail.role === "confirm") {  
-      this.teamMemberService.deleteTeamMember(this.teamMember()!); 
+    if (ev.detail.role === "confirm") {
+      this.teamMemberService.deleteTeamMember(this.teamMember()!);
       this._location.back();
     }
     return
   }
 
-  getProfilePic(){
-    const index = this.loadFilesService.images.findIndex(image => image.name === this.teamMember()?.profilePic);
+  getProfilePic(profilePicture: string) {
+    const index = this.loadFilesService.images.findIndex(image => image.name === profilePicture);
 
-    if (index !== -1){
+    if (index !== -1) {
       return this.loadFilesService.images[index].data;
-    }else{
+    } else {
       return "https://ionicframework.com/docs/img/demos/avatar.svg"
     }
-    
+
+  }
+
+  handleProfilePicture(photo: string) {
+    this.teamMember.update(member => {
+      if (!member) return member;
+      return {
+        ...member,
+        profilePic: photo
+      };
+    }
+    );
+    this.teamMemberService.updateTeamMember(this.teamMember()!);
   }
 }
