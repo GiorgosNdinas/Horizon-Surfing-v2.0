@@ -12,6 +12,11 @@ export class TeamMemberService {
 
   constructor(private databaseService: DatabaseService) {}
 
+  // Function to initialize the database connection
+  initializePlugin() {
+    this.db = this.databaseService.getDatabaseConnection();
+  }
+
   /**
    * Fetches all team members from the database that are not marked as deleted
    * and updates the dbTeamMembers signal with the retrieved data.
@@ -26,6 +31,9 @@ export class TeamMemberService {
    * @param teamMember - The team member object to be added.
    */
   async addTeamMember(teamMember: TeamMember){
+    if(!this.db){
+      this.initializePlugin();
+    }
     const query = `INSERT INTO teamMember (name, surname, profilePic) VALUES ('${teamMember.name}', '${teamMember.surname}', '${teamMember.profilePic}')`;
     const result = await this.db.query(query);
     this.getTeamMembers();

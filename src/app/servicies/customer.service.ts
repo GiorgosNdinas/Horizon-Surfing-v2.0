@@ -9,7 +9,8 @@ import { SQLiteDBConnection } from '@capacitor-community/sqlite';
   providedIn: 'root'
 })
 export class CustomerService {
-  private db: SQLiteDBConnection = this.databaseService.getDatabaseConnection();
+  // TEMPORARY: This is a temporary solution to avoid circular dependencies.
+  private db!: SQLiteDBConnection;
 
   dbCustomers = signal<Customer[]>([]);
 
@@ -17,6 +18,11 @@ export class CustomerService {
 
 
   constructor(private databaseService: DatabaseService) {}
+
+  // Function to initialize the database connection
+  initializePlugin() {
+    this.db = this.databaseService.getDatabaseConnection();
+  }
 
   // Function that gets all the customers from the database.
   async getCustomers(){
@@ -27,6 +33,9 @@ export class CustomerService {
 
   // Function that gets all customers that haven't paid yet
   async getUnpaidCustomers(){
+    if (!this.db) {
+      this.initializePlugin();
+    }
     const customers = await this.db.query('SELECT * FROM customer WHERE paid = 0 ORDER BY id DESC');
     this.dbCustomers.set(customers.values || []);
     this.dbSearchCustomers.set(this.dbCustomers());
