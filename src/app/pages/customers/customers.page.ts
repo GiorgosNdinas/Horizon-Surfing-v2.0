@@ -1,9 +1,9 @@
+import { CustomerService } from './../../servicies/customer.service';
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, ViewChild, inject } from '@angular/core';
-import { IonBackButton, IonButton, IonButtons, IonContent, IonHeader, IonIcon, IonTitle, IonToolbar } from '@ionic/angular/standalone';
-import { CustomerListComponent } from "./customer-list/customer-list.component";
-import { CustomerService } from 'src/app/servicies/customer.service';
-import { Router } from '@angular/router';
+import { ChangeDetectionStrategy, Component, OnInit, signal } from '@angular/core';
+import { IonBackButton, IonButtons, IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/standalone';
+import { AddCustomerButtonComponent } from './components/add-customer-button-component/add-customer-button-component';
+import { CustomerListComponent } from 'src/app/components/customer-list/customer-list.component';
 
 @Component({
   selector: 'app-customers',
@@ -16,30 +16,28 @@ import { Router } from '@angular/router';
       </ion-buttons>
       <ion-title>Customers</ion-title>
       <ion-buttons slot="end">
-        <ion-button expand="block" fill="outline" (click)="navigateToPage('add-customer')">
-          <ion-icon slot="start" name="add-outline"></ion-icon>            
-          <span class="add-customer-button-text">Add customer</span>
-        </ion-button>
+        <app-add-customer-button></app-add-customer-button>
       </ion-buttons>
     </ion-toolbar>
   </ion-header>
   <ion-content>
-    <app-customer-list></app-customer-list>
+    <app-customer-list [customers]="customerList"></app-customer-list>
   </ion-content>
 `,
   styleUrl: './customers.page.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    CommonModule, IonHeader, IonToolbar, IonButtons, IonBackButton, IonButton, IonTitle, IonIcon, IonContent,
-    CustomerListComponent
+    CommonModule, IonHeader, IonToolbar, IonButtons, IonBackButton, IonTitle, IonContent,
+    CustomerListComponent,
+    AddCustomerButtonComponent
   ]
 })
-export class CustomersPage {
+export class CustomersPage implements OnInit {
+  constructor(private customerService: CustomerService) {
+  }
+  ngOnInit(): void {
+    this.customerService.getCustomers();
+  }
   
-  constructor(private router: Router, private customerService: CustomerService){
-    this.customerService.getUnpaidCustomers(); // Test this
-  }
-  navigateToPage(page:string){
-    this.router.navigate([`customers/${page}`]);
-  }
+  customerList = this.customerService.dbCustomersSignal;
 }

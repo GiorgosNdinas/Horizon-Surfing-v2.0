@@ -1,5 +1,7 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { CapacitorSQLite, SQLiteConnection, SQLiteDBConnection } from '@capacitor-community/sqlite';
+import { firstValueFrom, filter } from 'rxjs';
+import { toObservable } from '@angular/core/rxjs-interop';
 
 const DB_HORIZON_SURFING = 'horizon-surfing-db-1';
 
@@ -9,10 +11,16 @@ const DB_HORIZON_SURFING = 'horizon-surfing-db-1';
 export class DatabaseService {
   private sqlite: SQLiteConnection = new SQLiteConnection(CapacitorSQLite);
   private db!: SQLiteDBConnection;
+  private ready = signal<boolean>(false);
+
+  get isReady() {
+    return this.ready;
+  }
 
   constructor() { }
 
   async initializePlugin(){
+    
     this.db = await this.sqlite.createConnection(
       DB_HORIZON_SURFING,
       false,
@@ -63,19 +71,26 @@ export class DatabaseService {
     );
     `;
 
-    const testApp = `
-    INSERT INTO customer (name, surname, homeAddress, hotel, hotelRoom, email, phoneNumber, departureDate, signature, terms, paid) VALUES ('John', 'Doe', '123 Main St', 'Hotel California', '123', 'a@a', '123456789', '2025-02-15', 'signature', 1, 0);
-    `;
-
     await this.db.execute(createTeamMemberSchema);
     await this.db.execute(createCustomerSchema);
     await this.db.execute(createActivitySchema);
-    await this.db.execute(testApp);
     
+    this.ready.set(true);
+
     return true;
   }
 
   getDatabaseConnection(){
+    return this.db;
+  }
+
+  async getDatabaseConnection1(): Promise<SQLiteDBConnection> {
+    if (!this.ready()) {
+      // wait until ready
+      await firstValueFrom(
+        toObservable(this.ready).pipe(filter(Boolean))
+      );
+    }
     return this.db;
   }
 }

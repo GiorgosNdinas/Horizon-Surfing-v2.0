@@ -1,5 +1,5 @@
 import { DatabaseService } from 'src/app/servicies/database.service';
-import { Injectable, signal } from '@angular/core';
+import { effect, Injectable, signal } from '@angular/core';
 import { Customer } from '../models/customer.model';
 import { SQLiteDBConnection } from '@capacitor-community/sqlite';
 
@@ -9,42 +9,58 @@ import { SQLiteDBConnection } from '@capacitor-community/sqlite';
   providedIn: 'root'
 })
 export class CustomerService {
-  private db: SQLiteDBConnection = this.databaseService.getDatabaseConnection();
 
-  dbCustomers = signal<Customer[]>([]);
+  private dbCustomers = signal<Customer[]>([]);
 
-  dbSearchCustomers = signal<Customer[]>(this.dbCustomers());
+  // private dbSearchCustomers = signal<Customer[]>(this.dbCustomers());
+
+  get dbCustomersSignal() {
+    return this.dbCustomers;
+  }
 
 
+  constructor(private databaseService: DatabaseService) { 
+    effect(() => {
+      if (this.databaseService.isReady()) {
+        this.getCustomers();
+      }
+    });
+  }
 
-  constructor(private databaseService: DatabaseService) {}
+  private async getDb(): Promise<SQLiteDBConnection> {
+    return await this.databaseService.getDatabaseConnection();
+  }
 
   // Function that gets all the customers from the database.
-  async getCustomers(){
-    const customers = await this.db.query('SELECT * FROM customer ORDER BY id DESC');
+  async getCustomers() {
+    const db = await this.getDb();
+    const customers = await db.query('SELECT * FROM customer ORDER BY id DESC');
     this.dbCustomers.set(customers.values || []);
-    this.dbSearchCustomers.set(this.dbCustomers());
+    // this.dbSearchCustomers.set(this.dbCustomers());
   }
 
   // Function that gets all customers that haven't paid yet
-  async getUnpaidCustomers(){
-    const customers = await this.db.query('SELECT * FROM customer WHERE paid = 0 ORDER BY id DESC');
+  async getUnpaidCustomers() {
+    const db = await this.getDb();
+    const customers = await db.query('SELECT * FROM customer WHERE paid = 0 ORDER BY id DESC');
     this.dbCustomers.set(customers.values || []);
-    this.dbSearchCustomers.set(this.dbCustomers());
+    // this.dbSearchCustomers.set(this.dbCustomers());
   }
 
   // Function that adds a customer to the database
-  async addCustomer(customer: Customer){
+  async addCustomer(customer: Customer) {
+    const db = await this.getDb();
     const query = `INSERT INTO customer (name, surname, homeAddress, hotel, hotelRoom, email, phoneNumber, departureDate, signature, terms, paid) VALUES ('${customer.name}', '${customer.surname}', '${customer.homeAddress}', '${customer.hotel}', '${customer.hotelRoom}', '${customer.email}', '${customer.phoneNumber}', '${customer.departureDate}', '${customer.signature}' , ${customer.terms}, ${customer.paid})`;
-    await this.db.query(query);
+    await db.query(query);
 
     this.getUnpaidCustomers();
   }
 
   // Function to edit a customer from the database
-  async updateCustomer(customer: Customer){
+  async updateCustomer(customer: Customer) {
+    const db = await this.getDb();
     const query = `UPDATE customer SET name = '${customer.name}', surname = '${customer.surname}', homeAddress = '${customer.homeAddress}', hotel = '${customer.hotel}', hotelRoom = '${customer.hotelRoom}', email = '${customer.email}', phoneNumber = '${customer.phoneNumber}', departureDate = '${customer.departureDate}', signature = '${customer.signature}', terms = ${customer.terms}, paid = ${customer.paid} WHERE id = ${customer.id}`;
-    await this.db.query(query);
+    await db.query(query);
 
     this.getUnpaidCustomers();
   }

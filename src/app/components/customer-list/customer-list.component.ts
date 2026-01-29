@@ -1,9 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, Input, Signal, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { IonCol, IonGrid, IonIcon, IonList, IonRow, IonSearchbar } from '@ionic/angular/standalone';
 import { Customer } from 'src/app/models/customer.model';
-import { CustomerService } from 'src/app/servicies/customer.service';
 
 @Component({
   selector: 'app-customer-list',
@@ -29,7 +28,7 @@ import { CustomerService } from 'src/app/servicies/customer.service';
           <ion-col>Departure</ion-col>
           <ion-col size="2">Paid</ion-col>
       </ion-row>
-      @for(customer of this.customersForDisplay(); track $index){
+      @for(customer of this.customersForSearch(); track $index){
         <ion-row class="ion-align-items-start" [routerLink]="[customer.id]">
           <ion-col size="auto">{{$index + 1}}</ion-col>
           <ion-col>{{customer.name}}</ion-col>
@@ -50,16 +49,21 @@ import { CustomerService } from 'src/app/servicies/customer.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CustomerListComponent {
-  private customerService = inject(CustomerService);
 
-  // Signal that displays the customers
-  customersForDisplay = computed<Customer[]>(() => {
-    return this.customerService.dbSearchCustomers();
+  @Input() customers!: Signal<Customer[]>;
+
+  search = signal('');
+
+  customersForSearch = computed(() => {
+    const query = this.search().toLowerCase();
+
+    return this.customers().filter(d =>
+      d.surname.toLowerCase().includes(query)
+    );
   });
 
-  // Search input handler
-  handleSearchInput(event: any) {
-    const query = event.target.value.toLowerCase();
-    this.customerService.dbSearchCustomers.set(this.customerService.dbCustomers().filter((d) => d.surname.toLowerCase().indexOf(query) > -1));
+  handleSearchInput(event: Event) {
+    const input = event.target as HTMLInputElement;
+    this.search.set(input.value);
   }
- }
+}
