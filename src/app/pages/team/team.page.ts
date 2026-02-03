@@ -1,11 +1,13 @@
 import { ChangeDetectionStrategy, Component, OnInit, ViewChild } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { IonAvatar, IonBackButton, IonButton, IonButtons, IonCard, IonCol, IonContent, IonGrid, IonHeader, IonItem, IonModal, IonRow, IonTitle, IonToolbar } from '@ionic/angular/standalone';
 import { TeamMemberFormComponent } from "./team-components/team-member-form/team-member-form.component";
 import { OverlayEventDetail } from '@ionic/core/components';
 import { TeamMemberService } from 'src/app/servicies/team-member.service';
 import { TeamMember } from 'src/app/models/team-members.modal';
 import { LoadFilesService } from 'src/app/servicies/load-files.service';
+
+type TeamMemberDisplay = TeamMember & { id?: number | string; role?: string };
 
 @Component({
     selector: 'app-team',
@@ -22,21 +24,43 @@ import { LoadFilesService } from 'src/app/servicies/load-files.service';
     <ion-content>
       <ion-grid>
         <div class="grid-container">
-          @for(teamMember of this.teamMemberService.dbTeamMembers(); track $index){
-            <ion-card [routerLink]="[teamMember.id]">
-              <ion-row>
-                <ion-col size="3">
-                  <ion-avatar aria-hidden="true">
-                    <img  [src]="getProfilePic(teamMember)" />
-                  </ion-avatar>
-                </ion-col>
-                <ion-col size="9">
-                  <ion-item lines="none">
-                    <h1>{{teamMember.name}} {{teamMember.surname}}</h1>
-                  </ion-item>
-                </ion-col>
-              </ion-row>
-            </ion-card>
+          @for(teamMember of this.teamMembersForDisplay(); track $index){
+            @if (teamMember.id === -1) {
+              <ion-card>
+                <ion-row>
+                  <ion-col size="3">
+                    <ion-avatar aria-hidden="true">
+                      <img  [src]="getProfilePic(teamMember)" />
+                    </ion-avatar>
+                  </ion-col>
+                  <ion-col size="9">
+                    <ion-item lines="none">
+                      <h1>{{teamMember.name}} {{teamMember.surname}}</h1>
+                    </ion-item>
+                    @if (teamMember.role) {
+                      <ion-item lines="none">
+                        <h2>{{teamMember.role}}</h2>
+                      </ion-item>
+                    }
+                  </ion-col>
+                </ion-row>
+              </ion-card>
+            } @else {
+              <ion-card [routerLink]="[teamMember.id]">
+                <ion-row>
+                  <ion-col size="3">
+                    <ion-avatar aria-hidden="true">
+                      <img  [src]="getProfilePic(teamMember)" />
+                    </ion-avatar>
+                  </ion-col>
+                  <ion-col size="9">
+                    <ion-item lines="none">
+                      <h1>{{teamMember.name}} {{teamMember.surname}}</h1>
+                    </ion-item>
+                  </ion-col>
+                </ion-row>
+              </ion-card>
+            }
           }
           <ion-card id="open-new-team-member-modal" style="border: 3px solid; border-style: dotted;">
             <ion-row>
@@ -118,14 +142,27 @@ import { LoadFilesService } from 'src/app/servicies/load-files.service';
         TeamMemberFormComponent
     ]
 })
+
 export class TeamPage implements OnInit {
   @ViewChild(IonModal) modal!: IonModal;
+
+  private readonly adminTeamMember: TeamMemberDisplay = {
+    id: -1,
+    name: 'Admin',
+    surname: '',
+    role: 'Admin',
+    profilePic: 'https://ionicframework.com/docs/img/demos/avatar.svg'
+  };
   
   constructor(public teamMemberService: TeamMemberService, private loadFilesService: LoadFilesService) { }
 
-  ngOnInit(): void {
-    this.teamMemberService.getTeamMembers();
-    this.loadFilesService.loadFiles();
+  async ngOnInit() {
+    await this.teamMemberService.getTeamMembers();
+    await this.loadFilesService.loadFiles();
+  }
+
+  teamMembersForDisplay(): TeamMemberDisplay[] {
+    return [this.adminTeamMember, ...this.teamMemberService.dbTeamMembers()];
   }
 
   // Close the customer modal with a 'cancel' action
@@ -148,14 +185,15 @@ export class TeamPage implements OnInit {
     // Check if the dismissal role is 'confirm'
     if (ev.detail.role === 'confirm') {
       console.log('Closed with confirm');
+      this.teamMemberService.getTeamMembers();
     }
   }
 
-  getProfilePic(teamMember: TeamMember){
-    const index = this.loadFilesService.images.findIndex(image => image.name === teamMember.profilePic);
+  getProfilePic(teamMember: TeamMemberDisplay){
+    const index = this.loadFilesService.images().findIndex(image => image.name === teamMember.profilePic);
 
     if (index !== -1){
-      return this.loadFilesService.images[index].data;
+      return this.loadFilesService.images()[index].data;
     }else{
       return "https://ionicframework.com/docs/img/demos/avatar.svg";
     }

@@ -5,7 +5,6 @@ import { IonButton, IonCol, IonGrid, IonInput, IonItem, IonRow, IonSelect, IonSe
 import { TeamMember } from 'src/app/models/team-members.modal';
 import { TeamMemberService } from 'src/app/servicies/team-member.service';
 import { TeamProfilePhotoComponent } from "../team-profile-photo/team-profile-photo.component";
-import { DatabaseService } from 'src/app/servicies/database.service';
 
 @Component({
   selector: 'app-team-member-form',

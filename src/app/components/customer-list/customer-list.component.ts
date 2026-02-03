@@ -18,7 +18,10 @@ import { Customer } from 'src/app/models/customer.model';
     RouterLink
   ],
   template: `
-  <ion-searchbar [debounce]="500" placeholder="Search customer by Surname" (ionInput)="handleSearchInput($event)" style="padding-top: 20px"></ion-searchbar>
+  <ion-searchbar 
+    [debounce]="500" 
+    placeholder="Search customer by Surname"
+    style="padding-top: 20px"></ion-searchbar>
   <ion-list>
     <ion-grid>
       <ion-row class="ion-align-items-start">
