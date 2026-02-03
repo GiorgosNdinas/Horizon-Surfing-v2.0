@@ -1,5 +1,5 @@
-import { ChangeDetectionStrategy, Component, ViewChild } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { ChangeDetectionStrategy, Component, OnInit, ViewChild } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { IonAvatar, IonBackButton, IonButton, IonButtons, IonCard, IonCol, IonContent, IonGrid, IonHeader, IonItem, IonModal, IonRow, IonTitle, IonToolbar } from '@ionic/angular/standalone';
 import { TeamMemberFormComponent } from "./team-components/team-member-form/team-member-form.component";
 import { OverlayEventDetail } from '@ionic/core/components';
@@ -22,21 +22,43 @@ import { LoadFilesService } from 'src/app/servicies/load-files.service';
     <ion-content>
       <ion-grid>
         <div class="grid-container">
-          @for(teamMember of this.teamMemberService.dbTeamMembers(); track $index){
-            <ion-card [routerLink]="[teamMember.id]">
-              <ion-row>
-                <ion-col size="3">
-                  <ion-avatar aria-hidden="true">
-                    <img  [src]="getProfilePic(teamMember)" />
-                  </ion-avatar>
-                </ion-col>
-                <ion-col size="9">
-                  <ion-item lines="none">
-                    <h1>{{teamMember.name}} {{teamMember.surname}}</h1>
-                  </ion-item>
-                </ion-col>
-              </ion-row>
-            </ion-card>
+          @for(teamMember of this.teamMembersForDisplay(); track $index){
+            @if (teamMember.id === 'admin') {
+              <ion-card>
+                <ion-row>
+                  <ion-col size="3">
+                    <ion-avatar aria-hidden="true">
+                      <img  [src]="getProfilePic(teamMember)" />
+                    </ion-avatar>
+                  </ion-col>
+                  <ion-col size="9">
+                    <ion-item lines="none">
+                      <h1>{{teamMember.name}} {{teamMember.surname}}</h1>
+                    </ion-item>
+                    @if (teamMember.role) {
+                      <ion-item lines="none">
+                        <h2>{{teamMember.role}}</h2>
+                      </ion-item>
+                    }
+                  </ion-col>
+                </ion-row>
+              </ion-card>
+            } @else {
+              <ion-card [routerLink]="[teamMember.id]">
+                <ion-row>
+                  <ion-col size="3">
+                    <ion-avatar aria-hidden="true">
+                      <img  [src]="getProfilePic(teamMember)" />
+                    </ion-avatar>
+                  </ion-col>
+                  <ion-col size="9">
+                    <ion-item lines="none">
+                      <h1>{{teamMember.name}} {{teamMember.surname}}</h1>
+                    </ion-item>
+                  </ion-col>
+                </ion-row>
+              </ion-card>
+            }
           }
           <ion-card id="open-new-team-member-modal" style="border: 3px solid; border-style: dotted;">
             <ion-row>
@@ -118,10 +140,28 @@ import { LoadFilesService } from 'src/app/servicies/load-files.service';
         TeamMemberFormComponent
     ]
 })
-export class TeamPage {
+type TeamMemberDisplay = TeamMember & { id?: number | string; role?: string };
+
+export class TeamPage implements OnInit {
   @ViewChild(IonModal) modal!: IonModal;
+
+  private readonly adminTeamMember: TeamMemberDisplay = {
+    id: 'admin',
+    name: 'Admin',
+    surname: '',
+    role: 'Admin',
+    profilePic: 'https://ionicframework.com/docs/img/demos/avatar.svg'
+  };
   
   constructor(public teamMemberService: TeamMemberService, private loadFilesService: LoadFilesService) { }
+
+  ngOnInit() {
+    this.teamMemberService.getTeamMembers();
+  }
+
+  teamMembersForDisplay(): TeamMemberDisplay[] {
+    return [this.adminTeamMember, ...this.teamMemberService.dbTeamMembers()];
+  }
 
   // Close the customer modal with a 'cancel' action
   cancel() {
@@ -143,10 +183,11 @@ export class TeamPage {
     // Check if the dismissal role is 'confirm'
     if (ev.detail.role === 'confirm') {
       console.log('Closed with confirm');
+      this.teamMemberService.getTeamMembers();
     }
   }
 
-  getProfilePic(teamMember: TeamMember){
+  getProfilePic(teamMember: TeamMemberDisplay){
     const index = this.loadFilesService.images.findIndex(image => image.name === teamMember.profilePic);
 
     if (index !== -1){
