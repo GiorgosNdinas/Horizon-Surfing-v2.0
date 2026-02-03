@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, Inject } from '@angular/core';
 import { IonApp, IonRouterOutlet } from '@ionic/angular/standalone';
-import { DatabaseService } from './servicies/database.service';
+import { DATA_PROVIDER, DataProvider } from './servicies/data-provider';
 import { SplashScreen } from '@capacitor/splash-screen';
 
 @Component({
@@ -10,12 +10,12 @@ import { SplashScreen } from '@capacitor/splash-screen';
   imports: [IonApp, IonRouterOutlet],
 })
 export class AppComponent {
-  constructor(private databaseService: DatabaseService) {
+  constructor(@Inject(DATA_PROVIDER) private dataProvider: DataProvider) {
     this.initApp();
   }
 
   async initApp(){
-    await this.databaseService.initializePlugin();
+    await this.dataProvider.initialize();
     SplashScreen.hide();
   }
 }

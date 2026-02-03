@@ -1,11 +1,13 @@
 import { ChangeDetectionStrategy, Component, OnInit, ViewChild } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { IonAvatar, IonBackButton, IonButton, IonButtons, IonCard, IonCol, IonContent, IonGrid, IonHeader, IonItem, IonModal, IonRow, IonTitle, IonToolbar } from '@ionic/angular/standalone';
 import { TeamMemberFormComponent } from "./team-components/team-member-form/team-member-form.component";
 import { OverlayEventDetail } from '@ionic/core/components';
 import { TeamMemberService } from 'src/app/servicies/team-member.service';
 import { TeamMember } from 'src/app/models/team-members.modal';
 import { LoadFilesService } from 'src/app/servicies/load-files.service';
+
+type TeamMemberDisplay = TeamMember & { id?: number | string; role?: string };
 
 @Component({
     selector: 'app-team',
@@ -140,7 +142,7 @@ import { LoadFilesService } from 'src/app/servicies/load-files.service';
         TeamMemberFormComponent
     ]
 })
-type TeamMemberDisplay = TeamMember & { id?: number | string; role?: string };
+
 
 export class TeamPage implements OnInit {
   @ViewChild(IonModal) modal!: IonModal;
@@ -154,6 +156,10 @@ export class TeamPage implements OnInit {
   };
   
   constructor(public teamMemberService: TeamMemberService, private loadFilesService: LoadFilesService) { }
+  
+  ngOnInit(): void {
+    this.teamMemberService.getTeamMembers();
+  }
 
   ngOnInit() {
     this.teamMemberService.getTeamMembers();

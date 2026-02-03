@@ -1,47 +1,27 @@
-import { Injectable, signal } from '@angular/core';
+import { Inject, Injectable, signal } from '@angular/core';
 import { Lesson } from '../models/lesson.model';
-import { SQLiteDBConnection } from '@capacitor-community/sqlite';
-import { DatabaseService } from './database.service';
 import { TeamMemberService } from './team-member.service';
+import { DATA_PROVIDER, DataProvider } from './data-provider';
 
 @Injectable({
   providedIn: 'root'
 })
 export class LessonsService {
-  private db: SQLiteDBConnection = this.databaseService.getDatabaseConnection();
-
   dbLessons = signal<Lesson[]>([]);
 
-  constructor(private databaseService: DatabaseService, private teamMemberService: TeamMemberService) { }
+  constructor(
+    @Inject(DATA_PROVIDER) private dataProvider: DataProvider,
+    private teamMemberService: TeamMemberService
+  ) { }
 
   async getLessons() {
-    const lessons = await this.db.query('SELECT * FROM lesson');
-    this.dbLessons.set(lessons.values || []);
+    const lessons = await this.dataProvider.getLessons();
+    this.dbLessons.set(lessons);
   }
 
   async addLesson(lesson: Lesson) {
-    const query = `INSERT INTO lesson (customerId, teacherId, lessonType, lessonHours, lessonDate) VALUES (${lesson.customerId}, ${lesson.teacherId}, '${lesson.lessonType}', '${lesson.lessonHours}', '${lesson.lessonDate}')`;
-    const result = await this.db.query(query);
-
-    this.addTotalHours(lesson);
-
-    this.getLessons();
-  }
-
-  // Adds the created hour to the total hours sum of the teacher
-  async addTotalHours(lesson: Lesson) {
-    const query = `UPDATE teamMember SET totalHoursTaught = (SELECT SUM(lessonHours) FROM lesson WHERE teacherId = ${lesson.teacherId})`;
-    const result = await this.db.query(query);
-
-    this.addHoursTaughtThisMonth();
-  }
-
-  // Adds the created hour to the hours taught this month
-  async addHoursTaughtThisMonth(){
-    const currentDate = new Date().toISOString().split("T")[0];
-    const query = `UPDATE teamMember SET hoursTaughtThisMonth = (SELECT SUM(lessonHours) FROM lesson WHERE strftime('%Y-%m', lessonDate) = '${currentDate.substring(0, 7)}')`;
-    const result = await this.db.query(query);
-
+    await this.dataProvider.addLesson(lesson);
+    await this.getLessons();
     this.teamMemberService.getTeamMembers();
   }
 
