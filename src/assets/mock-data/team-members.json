@@ -1,0 +1,20 @@
+[
+  {
+    "id": 1,
+    "name": "Alex",
+    "surname": "Wave",
+    "profilePic": "https://ionicframework.com/docs/img/demos/avatar.svg",
+    "deleted": 0,
+    "totalHoursTaught": 0,
+    "hoursTaughtThisMonth": 0
+  },
+  {
+    "id": 2,
+    "name": "Jana",
+    "surname": "Rider",
+    "profilePic": "https://ionicframework.com/docs/img/demos/avatar.svg",
+    "deleted": 0,
+    "totalHoursTaught": 0,
+    "hoursTaughtThisMonth": 0
+  }
+]

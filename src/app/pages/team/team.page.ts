@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, ViewChild } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { IonAvatar, IonBackButton, IonButton, IonButtons, IonCard, IonCol, IonContent, IonGrid, IonHeader, IonItem, IonModal, IonRow, IonTitle, IonToolbar } from '@ionic/angular/standalone';
 import { TeamMemberFormComponent } from "./team-components/team-member-form/team-member-form.component";
@@ -118,10 +118,14 @@ import { LoadFilesService } from 'src/app/servicies/load-files.service';
         TeamMemberFormComponent
     ]
 })
-export class TeamPage {
+export class TeamPage implements OnInit {
   @ViewChild(IonModal) modal!: IonModal;
   
   constructor(public teamMemberService: TeamMemberService, private loadFilesService: LoadFilesService) { }
+  
+  ngOnInit(): void {
+    this.teamMemberService.getTeamMembers();
+  }
 
   // Close the customer modal with a 'cancel' action
   cancel() {

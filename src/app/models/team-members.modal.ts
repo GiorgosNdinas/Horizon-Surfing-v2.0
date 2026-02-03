@@ -3,5 +3,7 @@ export interface TeamMember {
   name: string,
   surname: string,
   profilePic: string,
-  deleted?: number
+  deleted?: number,
+  totalHoursTaught?: number,
+  hoursTaughtThisMonth?: number
 }
