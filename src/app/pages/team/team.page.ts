@@ -1,11 +1,12 @@
 import { ChangeDetectionStrategy, Component, OnInit, ViewChild } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { IonAvatar, IonBackButton, IonButton, IonButtons, IonCard, IonCol, IonContent, IonGrid, IonHeader, IonItem, IonModal, IonRow, IonTitle, IonToolbar } from '@ionic/angular/standalone';
 import { TeamMemberFormComponent } from "./team-components/team-member-form/team-member-form.component";
 import { OverlayEventDetail } from '@ionic/core/components';
 import { TeamMemberService } from 'src/app/servicies/team-member.service';
 import { TeamMember } from 'src/app/models/team-members.modal';
 import { LoadFilesService } from 'src/app/servicies/load-files.service';
+
 
 type TeamMemberDisplay = TeamMember & { id?: number | string; role?: string };
 
@@ -25,7 +26,7 @@ type TeamMemberDisplay = TeamMember & { id?: number | string; role?: string };
       <ion-grid>
         <div class="grid-container">
           @for(teamMember of this.teamMembersForDisplay(); track $index){
-            @if (teamMember.id === -1) {
+            @if (teamMember.id == -1) {
               <ion-card>
                 <ion-row>
                   <ion-col size="3">
@@ -153,6 +154,7 @@ export class TeamPage implements OnInit {
     role: 'Admin',
     profilePic: 'https://ionicframework.com/docs/img/demos/avatar.svg'
   };
+
   
   constructor(public teamMemberService: TeamMemberService, private loadFilesService: LoadFilesService) { }
 
@@ -186,12 +188,12 @@ export class TeamPage implements OnInit {
     if (ev.detail.role === 'confirm') {
       console.log('Closed with confirm');
       this.teamMemberService.getTeamMembers();
+      this.teamMemberService.getTeamMembers();
     }
   }
 
   getProfilePic(teamMember: TeamMemberDisplay){
     const index = this.loadFilesService.images().findIndex(image => image.name === teamMember.profilePic);
-
     if (index !== -1){
       return this.loadFilesService.images()[index].data;
     }else{
