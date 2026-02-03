@@ -1,12 +1,9 @@
-import { OverlayEventDetail } from '@ionic/core/components';
 import { ChangeDetectionStrategy, Component, Input, OnInit, ViewChild, WritableSignal, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { IonAlert, IonAvatar, IonBackButton, IonButton, IonButtons, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonCol, IonContent, IonHeader, IonIcon, IonItem, IonModal, IonRow, IonTitle, IonToolbar } from '@ionic/angular/standalone';
 import { TeamMember } from 'src/app/models/team-members.modal';
 import { TeamMemberService } from 'src/app/servicies/team-member.service';
-import { CustomerService } from 'src/app/servicies/customer.service';
 import { Location } from '@angular/common';
-import { Customer } from 'src/app/models/customer.model';
 import { LoadFilesService } from 'src/app/servicies/load-files.service';
 @Component({
   selector: 'app-team-member',
