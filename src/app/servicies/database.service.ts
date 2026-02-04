@@ -80,11 +80,7 @@ export class DatabaseService {
     return true;
   }
 
-  getDatabaseConnection(){
-    return this.db;
-  }
-
-  async getDatabaseConnection1(): Promise<SQLiteDBConnection> {
+  async getDatabaseConnection(): Promise<SQLiteDBConnection> {
     if (!this.ready()) {
       // wait until ready
       await firstValueFrom(
