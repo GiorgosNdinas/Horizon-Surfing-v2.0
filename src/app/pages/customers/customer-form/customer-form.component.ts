@@ -1,12 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output, ViewChild, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, OnInit, Output, Signal, ViewChild, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { IonButton, IonButtons, IonCheckbox, IonCol, IonContent, IonDatetime, IonFab, IonFabButton, IonFabList, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonModal, IonRow, IonSelect, IonSelectOption, IonTitle, IonToolbar, ModalController, IonCard, IonCardContent } from '@ionic/angular/standalone';
 import { SignPadComponent } from 'src/app/components/sign-pad/sign-pad.component';
 import { Customer } from 'src/app/models/customer.model';
-import { CustomerService } from 'src/app/servicies/customer.service';
 import { TermsOfServiceComponent } from '../../terms-of-service/terms-of-service.component';
-import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-customer-form',
@@ -26,7 +24,7 @@ import { Router } from '@angular/router';
               label-placement="floating" 
               fill="outline" 
               placeholder="Enter name"
-              [readonly]="editForm">
+              [readonly]="!editableForm()">
             </ion-input>
           </ion-col>
           <ion-col>
@@ -38,7 +36,7 @@ import { Router } from '@angular/router';
               label-placement="floating" 
               fill="outline" 
               placeholder="Enter surname"
-              [readonly]="editForm">
+              [readonly]="!editableForm()">
             </ion-input>
           </ion-col>
         </ion-row>
@@ -52,7 +50,7 @@ import { Router } from '@angular/router';
               label-placement="floating" 
               fill="outline" 
               placeholder="Enter home address"
-              [readonly]="editForm">
+              [readonly]="!editableForm()">
             </ion-input>
           </ion-col>
         </ion-row>
@@ -66,7 +64,7 @@ import { Router } from '@angular/router';
               label-placement="floating" 
               fill="outline" 
               placeholder="Hotel"
-              [readonly]="editForm">
+              [readonly]="!editableForm()">
             </ion-input>
           </ion-col>
           <ion-col >
@@ -79,7 +77,7 @@ import { Router } from '@angular/router';
               fill="outline" 
               type="number" 
               placeholder="Room number"
-              [readonly]="editForm"></ion-input>
+              [readonly]="!editableForm()"></ion-input>
           </ion-col>
         </ion-row>
         <ion-row>
@@ -91,7 +89,7 @@ import { Router } from '@angular/router';
               errorText="Invalid email"
               email 
               label-placement="floating" fill="outline" type="email" placeholder="Enter E-mail"
-              [readonly]="editForm">
+              [readonly]="!editableForm()">
             </ion-input>
           </ion-col>
         </ion-row>
@@ -103,7 +101,7 @@ import { Router } from '@angular/router';
               label="Phone number*" 
               errorText="Phone is required" 
               label-placement="floating" fill="outline" placeholder="Enter Phone number"
-              [readonly]="editForm">
+              [readonly]="!editableForm()">
             </ion-input>
           </ion-col>
         </ion-row>
@@ -120,6 +118,7 @@ import { Router } from '@angular/router';
               required="true"
               formControlName ="departureDate"
               [min]="this.currentDate"
+              [disabled]="!editableForm()"
               style="margin: auto; border: 1px solid; border-radius: 20px;"
             >
             </ion-datetime>
@@ -129,15 +128,15 @@ import { Router } from '@angular/router';
           <!---------------------------- Signature ---------------------------->
           <ion-col style="margin-top: 10px;">
             <ion-label>Signature*</ion-label>
-            @if(!customerForDisplay){
+            @if(!customer){
               <app-sign-pad (signature)="handleSignature($event)"></app-sign-pad>
             }
-            @if(customerForDisplay){
+            @if(customer){
               <img [src]="this.customerForm.controls.signature.value" style="border: 1px solid">
             }
           </ion-col>
         </ion-row>
-        @if(!editForm){
+        @if(editableForm()){
           <ion-row>
           <!---------------------------- Terms check ---------------------------->
           <ion-col style="margin-top: 10px; margin-left: 10px;">
@@ -167,18 +166,11 @@ import { Router } from '@angular/router';
           </ion-col>
         </ion-row>
         }
-        @if(!editForm){
+        @if(editableForm()){
           <ion-button class="ion-margin-top" color="dark" expand="block" fill="outline" [disabled]="formValidation()" (click)="submit()" >Submit</ion-button>
         }
       </ion-grid>
       </form>
-      @if(customerForDisplay){
-        <ion-fab slot="fixed" vertical="top" horizontal="end">
-          <ion-fab-button (click)="toggleEdit()">
-            <ion-icon name="create-outline"></ion-icon>
-          </ion-fab-button>
-        </ion-fab>
-      }
     <br>
     </ion-card-content>
   </ion-card>
@@ -205,18 +197,20 @@ import { Router } from '@angular/router';
     IonButtons,
     IonButton,
     IonContent,
-    IonFab,
-    IonFabButton,
-    IonIcon,
     SignPadComponent,
     TermsOfServiceComponent,
   ]
 })
-export class CustomerFormComponent implements OnInit {
+export class CustomerFormComponent implements OnChanges {
+  // Input customer for edit mode, undefined for create mode
+  @Input() customer: Customer | undefined;
 
-  @Input() customerForDisplay: Customer | undefined;
-  // Confirmation that the customer was submited for the parent.
-  @Output() customerSubmited = new EventEmitter<boolean>();
+  // Signal to determine if the form is editable or read-only
+  @Input() editableForm!: Signal<boolean>;
+
+  // Event emitter to send the submitted customer data to the parent component
+  @Output() customerSubmitted = new EventEmitter<Customer>();
+
   @ViewChild(IonModal) modal!: IonModal;
 
   // Form declaration using Angular Reactive Forms
@@ -236,61 +230,62 @@ export class CustomerFormComponent implements OnInit {
 
   // Variable needed to set the minimum date on the datepicker.
   currentDate: string;
-  // Dependency injections
-  private customerService = inject(CustomerService);
-
-  // Variable to edit the customer form
-  editForm = true;
 
   constructor() {
-    // Set the current date for minimum date on the datepicker
+    // Set the current date in ISO format for the date picker minimum value
     this.currentDate = new Date().toISOString();
   }
 
-  ngOnInit(): void {
+  ngOnChanges(): void {
     // Initialize form values based on whether a customer is provided
-    if (this.customerForDisplay == undefined) {
+    if (this.customer)
+      this.populateForm(this.customer);
+    else {
+      this.customerForm.reset();
       this.customerForm.controls.departureDate.setValue(this.currentDate);
-      this.editForm = false;
     }
+
+    // Manage the enable/disable state of the departure date control
+    const departureDateControl = this.customerForm.controls.departureDate;
+    // Rule to enable the departure date control
+    const enableDepartureDate = !this.customer && this.editableForm();
+
+    // Enable or disable the departure date control based on editability
+    if (enableDepartureDate)
+      departureDateControl.enable({ emitEvent: false });
     else
-      this.populateForm();
+      departureDateControl.disable({ emitEvent: false });
   }
 
   // Populate the form with customer data
-  private populateForm(): void {
-    const customer: Customer = this.customerForDisplay!;
-    if (customer) {
-      const {
-        name = '',
-        surname = '',
-        homeAddress = '',
-        hotel = '',
-        hotelRoom = null,
-        email = '',
-        phoneNumber = '',
-        departureDate = '',
-        signature = '',
-        terms = 0,
-        paid = 0,
-      } = customer;
+  private populateForm(customer: Customer): void {
+    const {
+      name = '',
+      surname = '',
+      homeAddress = '',
+      hotel = '',
+      hotelRoom = null,
+      email = '',
+      phoneNumber = '',
+      departureDate = '',
+      signature = '',
+      terms = 0,
+      paid = 0,
+    } = customer;
 
-      this.customerForm.setValue({
-        name,
-        surname,
-        homeAddress,
-        hotel,
-        hotelRoom,
-        email,
-        phoneNumber,
-        departureDate,
-        signature,
-        terms,
-        paid,
-      });
-      // Disable the form controls when the form is populated
-      this.customerForm.controls.departureDate.disable();
-    }
+    this.customerForm.setValue({
+      name,
+      surname,
+      homeAddress,
+      hotel,
+      hotelRoom,
+      email,
+      phoneNumber,
+      departureDate,
+      signature,
+      terms,
+      paid,
+    });
   }
 
   // Change the value of the 'terms' form control on every checkbox click
@@ -312,83 +307,27 @@ export class CustomerFormComponent implements OnInit {
   }
 
   /**
- * Toggles the edit mode for the customer details form. When in edit mode, certain
- * form controls (activity, activityType, insurance, departureDate) are disabled to
- * prevent user modification. In view mode, these controls are enabled, allowing
- * users to update the customer details.
- */
-  toggleEdit(): void {
-    this.editForm = !this.editForm;
-
-    if (this.editForm) {
-      // Enable certain form controls in edit mode
-      ['activity', 'activityType', 'insurance', 'departureDate'].forEach(controlName => {
-        this.customerForm.get(controlName)?.disable();
-      });
-    } else {
-      // Disable certain form controls in view mode and update the customer details
-      ['activity', 'activityType', 'insurance', 'departureDate'].forEach(controlName => {
-        this.customerForm.get(controlName)?.enable();
-      });
-    }
-  }
-
-
-  /**
- * Submits the form data, either adding a new customer or updating an existing one,
- * and dismisses the modal with the submitted data. If it's a new customer, it adds
- * the customer to the list, triggers a search update, and dismisses the modal.
- * If it's an existing customer, it updates the customer data, triggers a search update,
- * and closes the editing mode.
- */
+   * Submits the customer form data by emitting the customerSubmitted event with the form values.
+   */
   submit() {
+
+    const raw = this.customerForm.getRawValue(); // includes disabled controls
+
     const customer: Customer = {
-      name: this.customerForm.value.name!,
-      surname: this.customerForm.value.surname!,
-      homeAddress: this.customerForm.value.homeAddress!,
-      hotel: this.customerForm.value.hotel!,
-      hotelRoom: this.customerForm.value.hotelRoom!,
-      email: this.customerForm.value.email!,
-      phoneNumber: this.customerForm.value.phoneNumber!,
-      departureDate: this.customerForm.value.departureDate?.split("T")[0]!,
-      signature: this.customerForm.value.signature!,
-      terms: this.customerForm.value.terms!,
-      paid: this.customerForm.value.paid!,
+      name: raw.name!,
+      surname: raw.surname!,
+      homeAddress: raw.homeAddress!,
+      hotel: raw.hotel!,
+      hotelRoom: raw.hotelRoom!,
+      email: raw.email!,
+      phoneNumber: raw.phoneNumber!,
+      departureDate: raw.departureDate!.split("T")[0]!,
+      signature: raw.signature!,
+      terms: raw.terms!,
+      paid: raw.paid!,
     };
 
-    // If customerForDisplay is undefined create a new customer
-    if (!this.customerForDisplay) {
-      // Add new customer to the database
-      this.customerService.addCustomer(customer)
-        .then(() => {
-          console.log('New customer added successfully');
-          // Send confirmation that the user was submited successfully.
-          this.customerSubmited.emit(true);
-        })
-        .catch((error) => {
-          console.error('Error adding new customer:', error);
-          // Send confirmation that the user was not submited successfully.
-          this.customerSubmited.emit(false);
-        });
-    } else {
-      // Update the edited customer in the database
-      customer.id = this.customerForDisplay.id;
-      this.customerService.updateCustomer(customer)
-        .then(() => {
-          console.log('Customer updated successfully.');
-          // Send confirmation that the user was submited successfully.
-          this.customerSubmited.emit(true);
-        })
-        .catch((error) => {
-          console.error('Error updating customer:', error);
-          // Send confirmation that the user was not submited successfully.
-          this.customerSubmited.emit(false);
-        })
-        .finally(() => {
-          // Close the editing mode for an existing customer
-          this.toggleEdit();
-        });
-    }
+    this.customerSubmitted.emit(customer);
   }
 }
 

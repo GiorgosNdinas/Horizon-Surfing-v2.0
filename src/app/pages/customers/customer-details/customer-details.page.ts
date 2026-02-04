@@ -1,20 +1,21 @@
 import { Activity } from './../../../models/activity.modal';
 import { CustomerService } from './../../../servicies/customer.service';
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, Input, OnInit, computed, inject } from '@angular/core';
-import { IonAlert, IonBackButton, IonButton, IonButtons, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonRow, IonTitle, IonToolbar, IonInput, IonModal } from '@ionic/angular/standalone';
+import { ChangeDetectionStrategy, Component, Input, OnInit, computed, inject, signal } from '@angular/core';
+import { IonAlert, IonBackButton, IonButton, IonButtons, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonRow, IonTitle, IonToolbar, IonInput, IonModal, IonFab, IonFabButton } from '@ionic/angular/standalone';
 import { Customer } from 'src/app/models/customer.model';
 import { LessonsService } from 'src/app/servicies/lessons.service';
 import { CustomerFormComponent } from '../customer-form/customer-form.component';
 import { ActivityListComponent } from "../../../components/activity-list/activity-list.component";
 import { RouterLink } from '@angular/router';
 import { ActivityService } from 'src/app/servicies/activity.service';
+import { ErrorService } from 'src/app/servicies/error.service';
 
 @Component({
   selector: 'app-customer-details',
   standalone: true,
   template: `
-  <ion-header>
+  <ion-header >
     <ion-toolbar>
       <ion-buttons slot="start">
         <ion-back-button></ion-back-button>
@@ -49,7 +50,12 @@ import { ActivityService } from 'src/app/servicies/activity.service';
     </ion-toolbar>
   </ion-header>
   <ion-content>
-    <app-customer-form [customerForDisplay]="customerForDisplay"></app-customer-form>  
+    <app-customer-form [customer]="customerForDisplay" [editableForm]="editableForm" (customerSubmitted)="updateCustomer($event)"></app-customer-form>
+    <ion-fab slot="fixed" vertical="top" horizontal="end" (click)="toggleEdit()">
+      <ion-fab-button>
+        <ion-icon name="create-outline"></ion-icon>
+      </ion-fab-button>
+    </ion-fab>
     <ion-card>
       <ion-card-header class="my-bill-header">
         <ion-card-title>My Bill</ion-card-title>
@@ -82,22 +88,27 @@ import { ActivityService } from 'src/app/servicies/activity.service';
     IonCardContent,
     CustomerFormComponent,
     ActivityListComponent,
-    RouterLink
+    RouterLink,
+    IonFab,
+    IonFabButton
 ]
 })
 export class CustomerDetailsPage implements OnInit {
   @Input() id!: number;
 
+  editableForm = signal<boolean>(false);
+
   lessonsService = inject(LessonsService);
   customerService = inject(CustomerService);
   activitiesService = inject(ActivityService);
+  errors = inject(ErrorService);
 
 
   customerForDisplay!: Customer;
   customerActivitiesForDisplay = computed<Activity[]>(() => {
     return this.activitiesService.dbActivitiesForCustomer();
   });
-  
+
 
   public alertButtons = [
     {
@@ -111,14 +122,46 @@ export class CustomerDetailsPage implements OnInit {
   ];
 
   ngOnInit(): void {
-    this.customerForDisplay = this.customerService.dbCustomers().find((customer) => customer.id == Number(this.id))!;
+    this.customerForDisplay = computed<Customer>(() => {
+      return this.customerService.dbCustomersSignal().find((customer) => customer.id == Number(this.id))!;
+    }
+    )();
+    // this.customerForDisplay = this.customerService.dbCustomersSignal().find((customer) => customer.id == Number(this.id))!;
     this.activitiesService.getActivityForCustomer(this.id);
+  }
+
+  toggleEdit(): void {
+    this.editableForm.update((value) => !value);
+  }
+
+  updateCustomer(updatedCustomer: Customer) {
+    updatedCustomer.id = this.customerForDisplay.id;
+    this.customerService.updateCustomer(updatedCustomer)
+      .then(() => {
+        // To be changed: show a toast message instead of console log
+        console.log('Customer updated successfully');
+        this.toggleEdit();
+      })
+      .catch((error) => {
+        // To be changed: show a toast message instead of console error
+        console.error('Error updating customer:', error);
+        this.errors.showError(`There was an error updating the customer: ${error}`, error);
+      });
   }
 
   updateCustomerPayment(ev: any) {
     if (ev.detail.role === "confirm") {
-      this.customerForDisplay.paid = (this.customerForDisplay.paid == 0)? 1 : 0;
-      this.customerService.updateCustomer(this.customerForDisplay);
+      this.customerForDisplay.paid = (this.customerForDisplay.paid == 0) ? 1 : 0;
+      this.customerService.updateCustomer(this.customerForDisplay)
+        .then(() => {
+          // To be changed: show a toast message instead of console log
+          console.log('Customer payment updated successfully');
+        })
+        .catch((error) => {
+          // To be changed: show a toast message instead of console error
+          console.error('Error updating customer payment:', error);
+          this.errors.showError(`There was an error updating the customer payment: ${error}`, error);
+        });
     }
   }
 }
