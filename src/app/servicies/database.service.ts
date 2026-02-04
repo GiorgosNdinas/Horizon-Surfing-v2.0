@@ -19,6 +19,10 @@ export class DatabaseService {
 
   constructor() { }
 
+  /**
+   * Initializes the SQLite plugin and creates the database schema if it doesn't exist.
+   * @return A promise that resolves when the plugin is initialized and the schema is created.
+   */
   async initializePlugin(){
     
     this.db = await this.sqlite.createConnection(
@@ -80,6 +84,10 @@ export class DatabaseService {
     return true;
   }
 
+  /**
+   * Gets the database connection, waiting for initialization if necessary.
+   * @return A promise that resolves to the SQLiteDBConnection instance.
+   */
   async getDatabaseConnection(): Promise<SQLiteDBConnection> {
     if (!this.ready()) {
       // wait until ready

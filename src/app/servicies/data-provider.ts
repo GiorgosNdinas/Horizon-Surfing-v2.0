@@ -24,9 +24,18 @@ export interface DataProvider {
   getLessons(): Promise<Lesson[]>;
   addLesson(lesson: Lesson): Promise<void>;
 }
-
+/**
+ * Injection token for the DataProvider service.
+ */
 export const DATA_PROVIDER = new InjectionToken<DataProvider>('DATA_PROVIDER');
 
+/**
+ * Factory function to create the appropriate DataProvider implementation
+ * based on the platform (web or native).
+ * @param databaseService The DatabaseService instance.
+ * @param http The HttpClient instance.
+ * @returns An instance of DataProvider.
+ */
 export function dataProviderFactory(
   databaseService: DatabaseService,
   http: HttpClient
