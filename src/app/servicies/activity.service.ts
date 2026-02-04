@@ -1,19 +1,15 @@
-import { Injectable, signal } from "@angular/core";
-import { SQLiteDBConnection } from "@capacitor-community/sqlite";
+import { Inject, Injectable, signal } from "@angular/core";
 import { Activity } from "../models/activity.modal";
-import { DatabaseService } from "./database.service";
-import { TeamMemberService } from "./team-member.service";
+import { DATA_PROVIDER, DataProvider } from "./data-provider";
 
 @Injectable({
   providedIn: 'root'
 })
 export class ActivityService {
-  private db: SQLiteDBConnection = this.databaseService.getDatabaseConnection();
 
   dbActivitiesForCustomer = signal<Activity[]>([]);
 
-  constructor(private databaseService: DatabaseService) { }
-
+  constructor(@Inject(DATA_PROVIDER) private dataProvider: DataProvider){}
   /**
    * Adds a new activity to the database.
    *
@@ -23,14 +19,7 @@ export class ActivityService {
    * @throws Will throw an error if the database query fails.
    */
   async addActivity(activity: Activity) {
-    const query = `INSERT INTO activity(customerId, name, type, amount, teamMemberId) VALUES (${activity.customerId}, '${activity.name}', '${activity.type}', '${activity.amount}', ${activity.teamMemberId})`;
-    await this.db.query(query)
-      .then(() => {
-        console.log('Activity added successfully.');
-      })
-      .catch((error) => {
-        console.error(error);
-      })
+    await this.dataProvider.addActivity(activity);
   }
 
 
@@ -43,8 +32,8 @@ export class ActivityService {
    * @throws Will throw an error if the database query fails.
    */
   async getActivityForCustomer(customerId: number) {
-    const query = `SELECT * FROM activity WHERE customerId = ${customerId}`;
-    const activitiesForCustomer = await this.db.query(query);
-    this.dbActivitiesForCustomer.set(activitiesForCustomer.values || []);
+    const activities = await this.dataProvider.getActivityForCustomer(customerId);
+    this.dbActivitiesForCustomer.set(activities);
   }
 }
+
