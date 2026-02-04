@@ -16,7 +16,7 @@ import { CustomerListComponent } from 'src/app/components/customer-list/customer
       </ion-buttons>
       <ion-title>Customers</ion-title>
       <ion-buttons slot="end">
-        <app-add-customer-button></app-add-customer-button>
+        <app-add-customer-button-component></app-add-customer-button-component>
       </ion-buttons>
     </ion-toolbar>
   </ion-header>
