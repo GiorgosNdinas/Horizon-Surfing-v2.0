@@ -1,8 +1,7 @@
 import { TeamMemberService } from 'src/app/servicies/team-member.service';
 import { IonList, IonGrid, IonRow, IonCol } from '@ionic/angular/standalone';
-import { ChangeDetectionStrategy, Component, Input, OnInit, Signal, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, Signal, effect } from '@angular/core';
 import { Activity } from 'src/app/models/activity.modal';
-import { ActivityService } from 'src/app/servicies/activity.service';
 
 @Component({
   selector: 'app-activity-list',
@@ -36,14 +35,14 @@ import { ActivityService } from 'src/app/servicies/activity.service';
   styleUrl: './activity-list.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ActivityListComponent implements OnInit {
+export class ActivityListComponent {
   @Input() activitiesForCustomer!: Signal<Activity[]>;
-  teamMemberService = inject(TeamMemberService);
 
-
-  ngOnInit() {
-    console.log('Customer id', this.activitiesForCustomer);
-    this.teamMemberService.getTeamMembers();
+  constructor(private teamMemberService: TeamMemberService){
+    effect(() => {      
+      if (this.activitiesForCustomer?.().length) 
+        this.teamMemberService.getTeamMembers();
+    });
   }
 
   getTeamMemberName(id: number) {

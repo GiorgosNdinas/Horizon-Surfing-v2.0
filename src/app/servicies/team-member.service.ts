@@ -51,7 +51,7 @@ export class TeamMemberService {
    * 
    * @returns The name of the team member or 'Unknown' if not found.
    */
-  getTeamMemberName(id :Number){
+  getTeamMemberName(id :number){
     const teamMember = this.dbTeamMembers().find((teamMember) => teamMember.id === id);
     return teamMember ? teamMember.name: 'Unknown';
   }
