@@ -2,7 +2,7 @@ import { CustomerService } from './../../servicies/customer.service';
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, OnInit, signal } from '@angular/core';
 import { IonBackButton, IonButtons, IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/standalone';
-import { AddCustomerButtonComponent } from './components/add-customer-button-component/add-customer-button-component';
+import { AddCustomerButtonComponent } from './components/add-customer-button/add-customer-button.component';
 import { CustomerListComponent } from 'src/app/components/customer-list/customer-list.component';
 
 @Component({

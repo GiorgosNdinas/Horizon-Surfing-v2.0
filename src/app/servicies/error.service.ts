@@ -15,6 +15,7 @@ export class ErrorService {
 
   /**
    * Displays an error message.
+   * 
    * @param message The error message to display.
    * @param header Optional header for the error message. Defaults to 'Error'.
    * @param details Optional additional details about the error.

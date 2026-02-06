@@ -1,49 +1,54 @@
 import { TeamMember } from './../models/team-members.modal';
-import { Injectable, signal } from '@angular/core';
-import { DatabaseService } from './database.service';
-import { SQLiteDBConnection } from '@capacitor-community/sqlite';
+import { Inject, Injectable, signal } from '@angular/core';
+import { DATA_PROVIDER, DataProvider } from './data-provider';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TeamMemberService {
-  private db: SQLiteDBConnection = this.databaseService.getDatabaseConnection();
   dbTeamMembers = signal<TeamMember[]>([]);
 
-  constructor(private databaseService: DatabaseService) {}
+  constructor(@Inject(DATA_PROVIDER) private dataProvider: DataProvider) {}
 
   /**
-   * Fetches all team members from the database that are not marked as deleted
-   * and updates the dbTeamMembers signal with the retrieved data.
+   * Fetches all team members from the database and updates the signal.
+   * 
+   * @return A promise that resolves when the team members are fetched and the signal is updated.
    */
   async getTeamMembers(){
-    const teamMembers = await this.db.query('SELECT * FROM teamMember WHERE deleted = 0');
-    this.dbTeamMembers.set(teamMembers.values || []);
+    const teamMembers = await this.dataProvider.getTeamMembers();
+    this.dbTeamMembers.set(teamMembers);
   }
 
   /**
    * Adds a new team member to the database and refreshes the team members list.
+   * 
    * @param teamMember - The team member object to be added.
+   * 
+   * @return A promise that resolves when the team member is added and the list is refreshed.
    */
   async addTeamMember(teamMember: TeamMember){
-    const query = `INSERT INTO teamMember (name, surname, profilePic) VALUES ('${teamMember.name}', '${teamMember.surname}', '${teamMember.profilePic}')`;
-    const result = await this.db.query(query);
+    await this.dataProvider.addTeamMember(teamMember);
     this.getTeamMembers();
   }
 
   /**
-   * Marks a team member as deleted in the database and refreshes the team members list.
-   * @param teamMember - The team member object to be marked as deleted.
+    * Deletes a team member from the database and refreshes the team members list.
+    * 
+    * @param teamMember - The team member object to be deleted.
+    * 
+    * @return A promise that resolves when the team member is deleted and the list is refreshed.
    */
-  async deleteTeamMember(teamMember: TeamMember){
-    const query = `UPDATE teamMember SET deleted = 1 WHERE id = ${teamMember.id}`;
-    const result = await this.db.query(query);
+  async deleteTeamMember(teamMember: TeamMember): Promise<void>{
+    await this.dataProvider.deleteTeamMember(teamMember);
     this.getTeamMembers();
   }
 
   /**
    * Retrieves the name of a team member by their ID.
+   * 
    * @param id - The ID of the team member.
+   * 
    * @returns The name of the team member or 'Unknown' if not found.
    */
   getTeamMemberName(id :Number){

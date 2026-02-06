@@ -10,7 +10,7 @@ import { IonButton, IonContent, IonImg, IonItem, IonLabel } from '@ionic/angular
         <ion-img src="./assets/Logo.png"></ion-img>
         <ion-item lines="none" color="none">
           <ion-label>
-            <h1>Welcome to Horizon surfing</h1>
+            <h1>Welcome</h1>
           </ion-label>
         </ion-item>
         <div class="buttons">

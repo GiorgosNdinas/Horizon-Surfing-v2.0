@@ -2,14 +2,14 @@ import { Activity } from './../../../models/activity.modal';
 import { CustomerService } from './../../../servicies/customer.service';
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Input, OnInit, computed, inject, signal } from '@angular/core';
-import { IonAlert, IonBackButton, IonButton, IonButtons, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonRow, IonTitle, IonToolbar, IonInput, IonModal, IonFab, IonFabButton } from '@ionic/angular/standalone';
+import { IonBackButton, IonButton, IonButtons, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonContent, IonHeader, IonIcon, IonItem, IonTitle, IonToolbar, IonFab, IonFabButton } from '@ionic/angular/standalone';
 import { Customer } from 'src/app/models/customer.model';
-import { LessonsService } from 'src/app/servicies/lessons.service';
-import { CustomerFormComponent } from '../customer-form/customer-form.component';
+import { CustomerFormComponent } from '../components/customer-form/customer-form.component';
 import { ActivityListComponent } from "../../../components/activity-list/activity-list.component";
 import { RouterLink } from '@angular/router';
 import { ActivityService } from 'src/app/servicies/activity.service';
 import { ErrorService } from 'src/app/servicies/error.service';
+import { PaidButtonComponent } from "../components/paid-button/paid-button.component";
 
 @Component({
   selector: 'app-customer-details',
@@ -22,30 +22,7 @@ import { ErrorService } from 'src/app/servicies/error.service';
       </ion-buttons>
       <ion-title>Customer info</ion-title>
       <ion-buttons slot="end">
-        @if(this.customerForDisplay.paid){
-          <ion-button id="present-alert" fill="outline" color="success">
-            <ion-icon slot="start" name="checkmark-outline"></ion-icon>  
-            Paid
-          </ion-button>
-          <ion-alert
-            trigger="present-alert"
-            header="Are you sure you want to change the customer payment?"
-            [buttons]="alertButtons"
-            (didDismiss)="updateCustomerPayment($event)"
-          ></ion-alert>
-        }
-        @if(!this.customerForDisplay.paid){
-          <ion-button id="present-alert" fill="outline" color="danger">
-            <ion-icon slot="start" name="close-outline"></ion-icon>  
-            Paid
-          </ion-button>
-          <ion-alert
-            trigger="present-alert"
-            header="Are you sure you want to change the customer payment?"
-            [buttons]="alertButtons"
-            (didDismiss)="updateCustomerPayment($event)"
-          ></ion-alert>
-        }
+        <app-paid-button [customer]="customerForDisplay" (customerPaymentUpdated)="updateCustomer($event)"></app-paid-button>
       </ion-buttons>
     </ion-toolbar>
   </ion-header>
@@ -65,7 +42,6 @@ import { ErrorService } from 'src/app/servicies/error.service';
         <app-activity-list [activitiesForCustomer]="customerActivitiesForDisplay"  ></app-activity-list>
       </ion-card-content>
     </ion-card>
-    <ion-item></ion-item>
   </ion-content>
 `,
   styleUrl: './customer-details.page.css',
@@ -80,9 +56,7 @@ import { ErrorService } from 'src/app/servicies/error.service';
     IonTitle,
     IonContent,
     IonIcon,
-    IonAlert,
     IonCard,
-    IonItem,
     IonCardHeader,
     IonCardTitle,
     IonCardContent,
@@ -90,44 +64,30 @@ import { ErrorService } from 'src/app/servicies/error.service';
     ActivityListComponent,
     RouterLink,
     IonFab,
-    IonFabButton
-]
+    IonFabButton,
+    PaidButtonComponent
+  ]
 })
 export class CustomerDetailsPage implements OnInit {
   @Input() id!: number;
 
   editableForm = signal<boolean>(false);
 
-  lessonsService = inject(LessonsService);
   customerService = inject(CustomerService);
   activitiesService = inject(ActivityService);
   errors = inject(ErrorService);
 
 
   customerForDisplay!: Customer;
-  customerActivitiesForDisplay = computed<Activity[]>(() => {
-    return this.activitiesService.dbActivitiesForCustomer();
-  });
 
+  customerActivitiesForDisplay = this.activitiesService.getActivitiesForCustomer();
 
-  public alertButtons = [
-    {
-      text: 'Cancel',
-      role: 'cancel',
-    },
-    {
-      text: 'Confirm',
-      role: 'confirm',
-    },
-  ];
-
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     this.customerForDisplay = computed<Customer>(() => {
       return this.customerService.dbCustomersSignal().find((customer) => customer.id == Number(this.id))!;
     }
     )();
-    // this.customerForDisplay = this.customerService.dbCustomersSignal().find((customer) => customer.id == Number(this.id))!;
-    this.activitiesService.getActivityForCustomer(this.id);
+    await this.activitiesService.getActivityForCustomer(this.id);
   }
 
   toggleEdit(): void {
@@ -149,19 +109,5 @@ export class CustomerDetailsPage implements OnInit {
       });
   }
 
-  updateCustomerPayment(ev: any) {
-    if (ev.detail.role === "confirm") {
-      this.customerForDisplay.paid = (this.customerForDisplay.paid == 0) ? 1 : 0;
-      this.customerService.updateCustomer(this.customerForDisplay)
-        .then(() => {
-          // To be changed: show a toast message instead of console log
-          console.log('Customer payment updated successfully');
-        })
-        .catch((error) => {
-          // To be changed: show a toast message instead of console error
-          console.error('Error updating customer payment:', error);
-          this.errors.showError(`There was an error updating the customer payment: ${error}`, error);
-        });
-    }
-  }
+
 }

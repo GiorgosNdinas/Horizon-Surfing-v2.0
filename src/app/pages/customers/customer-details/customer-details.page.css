@@ -7,3 +7,7 @@
   justify-content: space-between;
   align-items: center;
 }
+
+ion-card{
+  height: 100%;
+}

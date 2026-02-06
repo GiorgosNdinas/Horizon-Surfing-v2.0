@@ -1,7 +1,7 @@
 import { IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent } from '@ionic/angular/standalone';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { CustomerFormComponent } from '../customer-form/customer-form.component';
+import { CustomerFormComponent } from '../components/customer-form/customer-form.component';
 import { Customer } from 'src/app/models/customer.model';
 import { CustomerService } from 'src/app/servicies/customer.service';
 

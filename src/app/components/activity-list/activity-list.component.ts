@@ -43,6 +43,7 @@ export class ActivityListComponent implements OnInit {
 
   ngOnInit() {
     console.log('Customer id', this.activitiesForCustomer);
+    this.teamMemberService.getTeamMembers();
   }
 
   getTeamMemberName(id: number) {

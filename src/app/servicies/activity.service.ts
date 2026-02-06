@@ -7,7 +7,11 @@ import { DATA_PROVIDER, DataProvider } from "./data-provider";
 })
 export class ActivityService {
 
-  dbActivitiesForCustomer = signal<Activity[]>([]);
+  private activitiesForCustomer = signal<Activity[]>([]);
+
+  getActivitiesForCustomer() {
+    return this.activitiesForCustomer;
+  }
 
   constructor(@Inject(DATA_PROVIDER) private dataProvider: DataProvider){}
   /**
@@ -20,6 +24,7 @@ export class ActivityService {
    */
   async addActivity(activity: Activity) {
     await this.dataProvider.addActivity(activity);
+    await this.getActivityForCustomer(activity.customerId);
   }
 
 
@@ -33,7 +38,7 @@ export class ActivityService {
    */
   async getActivityForCustomer(customerId: number) {
     const activities = await this.dataProvider.getActivityForCustomer(customerId);
-    this.dbActivitiesForCustomer.set(activities);
+    this.activitiesForCustomer.set(activities);
   }
 }
 

@@ -152,10 +152,10 @@ export class TeamPage implements OnInit {
   }
 
   getProfilePic(teamMember: TeamMember){
-    const index = this.loadFilesService.images.findIndex(image => image.name === teamMember.profilePic);
+    const index = this.loadFilesService.images().findIndex(image => image.name === teamMember.profilePic);
 
     if (index !== -1){
-      return this.loadFilesService.images[index].data;
+      return this.loadFilesService.images()[index].data;
     }else{
       return "https://ionicframework.com/docs/img/demos/avatar.svg";
     }

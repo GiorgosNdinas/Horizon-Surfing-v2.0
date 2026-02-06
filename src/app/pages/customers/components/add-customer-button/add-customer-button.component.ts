@@ -15,7 +15,7 @@ import { Router } from '@angular/router';
       <span class="add-customer-button-text">Add customer</span>
      </ion-button>
   `,
-  styleUrl: './add-customer-button-component.css',
+  styleUrl: './add-customer-button.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AddCustomerButtonComponent {

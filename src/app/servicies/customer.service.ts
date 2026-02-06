@@ -19,6 +19,7 @@ export class CustomerService {
 
   /**
    * Function that gets all customers from the database
+   * 
    * @return {Promise<void>} A promise that resolves when the customers are fetched and stored.
    * 
    * @throws Will throw an error if the database query fails.
@@ -30,6 +31,7 @@ export class CustomerService {
 
   /**
    * Function that gets all customers that haven't paid yet
+   * 
    * @return {Promise<void>} A promise that resolves when the unpaid customers are fetched and stored.
    * 
    * @throws Will throw an error if the database query fails.
@@ -41,6 +43,7 @@ export class CustomerService {
 
   /**
    * Function to add a new customer to the database
+   * 
    * @param {Customer} customer - The customer object to be added.
    * @return {Promise<void>} A promise that resolves when the customer is added and the customer list is updated.
    * 
@@ -53,6 +56,7 @@ export class CustomerService {
 
   /**
    * Function to update an existing customer in the database
+   * 
    * @param customer 
    * @return {Promise<void>} A promise that resolves when the customer is updated and the customer list is refreshed.
    * 

@@ -86,6 +86,7 @@ export class DatabaseService {
 
   /**
    * Gets the database connection, waiting for initialization if necessary.
+   * 
    * @return A promise that resolves to the SQLiteDBConnection instance.
    */
   async getDatabaseConnection(): Promise<SQLiteDBConnection> {

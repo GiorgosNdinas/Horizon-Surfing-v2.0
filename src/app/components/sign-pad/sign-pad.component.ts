@@ -46,7 +46,7 @@ export class SignPadComponent implements AfterViewInit {
 
   canvasResize(){
     let canvas = document.querySelector('canvas');
-    canvas!.width = window.innerWidth - 20;
+    canvas!.width = window.innerWidth - 75;
   }
 
   drawComplete() {

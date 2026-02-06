@@ -1,54 +1,61 @@
-import { Injectable, signal } from '@angular/core';
+import { Inject, Injectable, signal } from '@angular/core';
 import { Lesson } from '../models/lesson.model';
-import { SQLiteDBConnection } from '@capacitor-community/sqlite';
-import { DatabaseService } from './database.service';
 import { TeamMemberService } from './team-member.service';
+import { DATA_PROVIDER, DataProvider } from './data-provider';
 
 @Injectable({
   providedIn: 'root'
 })
 export class LessonsService {
-  private db: SQLiteDBConnection = this.databaseService.getDatabaseConnection();
 
   dbLessons = signal<Lesson[]>([]);
 
-  constructor(private databaseService: DatabaseService, private teamMemberService: TeamMemberService) { }
+  constructor(
+    @Inject(DATA_PROVIDER) private dataProvider: DataProvider,
+    private teamMemberService: TeamMemberService
+  ) { }
 
+  /**
+   * Fetches lessons from the data provider and updates the dbLessons signal.
+   * 
+   * @return A promise that resolves when the lessons have been fetched and the signal updated.
+   */
   async getLessons() {
-    const lessons = await this.db.query('SELECT * FROM lesson');
-    this.dbLessons.set(lessons.values || []);
+    const lessons = await this.dataProvider.getLessons();
+    this.dbLessons.set(lessons);
   }
 
+  /**
+   * Adds a new lesson using the data provider, refreshes the lessons list, and updates team members.
+   * 
+   * @param lesson The lesson to be added.
+   * @return A promise that resolves when the lesson has been added and the necessary updates have been made.
+   */
   async addLesson(lesson: Lesson) {
-    const query = `INSERT INTO lesson (customerId, teacherId, lessonType, lessonHours, lessonDate) VALUES (${lesson.customerId}, ${lesson.teacherId}, '${lesson.lessonType}', '${lesson.lessonHours}', '${lesson.lessonDate}')`;
-    const result = await this.db.query(query);
-
-    this.addTotalHours(lesson);
-
-    this.getLessons();
-  }
-
-  // Adds the created hour to the total hours sum of the teacher
-  async addTotalHours(lesson: Lesson) {
-    const query = `UPDATE teamMember SET totalHoursTaught = (SELECT SUM(lessonHours) FROM lesson WHERE teacherId = ${lesson.teacherId})`;
-    const result = await this.db.query(query);
-
-    this.addHoursTaughtThisMonth();
-  }
-
-  // Adds the created hour to the hours taught this month
-  async addHoursTaughtThisMonth(){
-    const currentDate = new Date().toISOString().split("T")[0];
-    const query = `UPDATE teamMember SET hoursTaughtThisMonth = (SELECT SUM(lessonHours) FROM lesson WHERE strftime('%Y-%m', lessonDate) = '${currentDate.substring(0, 7)}')`;
-    const result = await this.db.query(query);
-
+    await this.dataProvider.addLesson(lesson);
+    await this.getLessons();
     this.teamMemberService.getTeamMembers();
   }
 
+  /**
+ * Filters lessons for a given teacher and student from the cached lessons list.
+ *
+ * @param teacherId - The ID of the teacher.
+ * @param studentId - The ID of the student (customer).
+ * 
+ * @returns An array of lessons matching the given teacher and student.
+ */
   getLessonsForTeacher(teacherId: number, studentId: number) {
     return this.dbLessons().filter(lesson => lesson.teacherId === teacherId && lesson.customerId === studentId);
   }
 
+  /**
+ * Filters lessons for a given customer from the cached lessons list.
+ *
+ * @param customerId - The ID of the customer (student).
+ * 
+ * @returns An array of lessons for the given customer.
+ */
   getLessonsForCustomer(customerId: number) {
     return this.dbLessons().filter(lesson => lesson.customerId === customerId)
   }

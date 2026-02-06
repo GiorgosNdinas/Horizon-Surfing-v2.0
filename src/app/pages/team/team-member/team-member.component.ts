@@ -131,10 +131,10 @@ export class TeamMemberComponent implements OnInit {
   }
 
   getProfilePic(){
-    const index = this.loadFilesService.images.findIndex(image => image.name === this.teamMember()?.profilePic);
+    const index = this.loadFilesService.images().findIndex(image => image.name === this.teamMember()?.profilePic);
 
     if (index !== -1){
-      return this.loadFilesService.images[index].data;
+      return this.loadFilesService.images()[index].data;
     }else{
       return "https://ionicframework.com/docs/img/demos/avatar.svg"
     }

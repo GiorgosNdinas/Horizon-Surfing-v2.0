@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { Directory, FileInfo, Filesystem } from '@capacitor/filesystem';
 import { LoadingController } from '@ionic/angular/standalone';
 
@@ -16,14 +16,17 @@ export interface LocalFile {
 })
 export class LoadFilesService {
 
-  images: LocalFile[] = [];
+  images = signal<LocalFile[]>([]);
 
 
   constructor(private loadingCtrl: LoadingController) { }
 
+  /**
+   * Loads files from the local filesystem and updates the images signal.
+   * 
+   * @returns A promise that resolves when the loading process is complete.
+   */
   async loadFiles(){
-    this.images = [];
-
     const loading = await this.loadingCtrl.create({
       message: 'Loading data...',
     });
@@ -46,6 +49,13 @@ export class LoadFilesService {
     })
   }
 
+  /**
+   *  Loads file data for the given file names and updates the images signal.
+   * 
+   * @param fileNames An array of FileInfo objects representing the files to load.
+   * 
+   * @return A promise that resolves when the file data has been loaded. 
+   */
   async loadFileData(fileNames:FileInfo[]){
     for(let file of fileNames){
       const filePath = `${IMAGE_DIR}/${file.name}`;
@@ -55,11 +65,14 @@ export class LoadFilesService {
         path: filePath
       });
 
-      this.images.push({
-        name: file.name,
-        path: filePath,
-        data: `data:image/jpeg;base64,${readFile.data}`
-      });
+      this.images.update(prev => [
+        ...prev,
+        {
+          name: file.name,
+          path: filePath,
+          data: `data:image/jpeg;base64,${readFile.data}`
+        }
+      ]);
     }
   } 
 

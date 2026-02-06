@@ -1,10 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, OnInit, Output, Signal, ViewChild, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, OnInit, Output, Signal, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { IonButton, IonButtons, IonCheckbox, IonCol, IonContent, IonDatetime, IonFab, IonFabButton, IonFabList, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonModal, IonRow, IonSelect, IonSelectOption, IonTitle, IonToolbar, ModalController, IonCard, IonCardContent } from '@ionic/angular/standalone';
+import { IonButton, IonButtons, IonCheckbox, IonCol, IonContent, IonDatetime, IonGrid, IonHeader, IonInput, IonLabel, IonModal, IonRow, IonTitle, IonToolbar, IonCard, IonCardContent } from '@ionic/angular/standalone';
 import { SignPadComponent } from 'src/app/components/sign-pad/sign-pad.component';
 import { Customer } from 'src/app/models/customer.model';
-import { TermsOfServiceComponent } from '../../terms-of-service/terms-of-service.component';
+import { TermsOfServiceComponent } from '../../../../components/terms-of-service/terms-of-service.component';
 
 @Component({
   selector: 'app-customer-form',
