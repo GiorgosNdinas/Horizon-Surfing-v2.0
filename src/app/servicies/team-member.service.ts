@@ -6,7 +6,11 @@ import { DATA_PROVIDER, DataProvider } from './data-provider';
   providedIn: 'root'
 })
 export class TeamMemberService {
-  dbTeamMembers = signal<TeamMember[]>([]);
+  private dbTeamMembers = signal<TeamMember[]>([]);
+
+  getDbTeamMembers(){
+    return this.dbTeamMembers;
+  }
 
   constructor(@Inject(DATA_PROVIDER) private dataProvider: DataProvider) {}
 

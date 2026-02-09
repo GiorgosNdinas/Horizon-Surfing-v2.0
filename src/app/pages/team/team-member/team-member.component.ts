@@ -117,9 +117,9 @@ export class TeamMemberComponent implements OnInit {
   }
 
   findTeamMember() {
-    const index = this.teamMemberService.dbTeamMembers().findIndex(item => item.id == this.id)
+    const index = this.teamMemberService.getDbTeamMembers()().findIndex(item => item.id == this.id)
     if (index !== -1)
-      this.teamMember.set(this.teamMemberService.dbTeamMembers()[index]) ;
+      this.teamMember.set(this.teamMemberService.getDbTeamMembers()()[index]) ;
   }
 
   deleteTeamMember(ev: any) {
