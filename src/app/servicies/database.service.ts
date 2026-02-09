@@ -23,8 +23,8 @@ export class DatabaseService {
    * Initializes the SQLite plugin and creates the database schema if it doesn't exist.
    * @return A promise that resolves when the plugin is initialized and the schema is created.
    */
-  async initializePlugin(){
-    
+  async initializePlugin() {
+
     this.db = await this.sqlite.createConnection(
       DB_HORIZON_SURFING,
       false,
@@ -78,7 +78,16 @@ export class DatabaseService {
     await this.db.execute(createTeamMemberSchema);
     await this.db.execute(createCustomerSchema);
     await this.db.execute(createActivitySchema);
-    
+
+    // Safe migration: add columns only if missing
+    if (!(await this.columnExists('activity', 'durationMinutes'))) {
+      await this.db.execute(`ALTER TABLE activity ADD COLUMN durationMinutes INTEGER DEFAULT NULL;`);
+    }
+
+    if (!(await this.columnExists('activity', 'lessonFormat'))) {
+      await this.db.execute(`ALTER TABLE activity ADD COLUMN lessonFormat TEXT DEFAULT NULL;`);
+    }
+
     this.ready.set(true);
 
     return true;
@@ -97,5 +106,11 @@ export class DatabaseService {
       );
     }
     return this.db;
+  }
+
+  private async columnExists(table: string, column: string): Promise<boolean> {
+    const res = await this.db.query(`PRAGMA table_info(${table});`);
+    const cols = res.values ?? [];
+    return cols.some((c: any) => c.name === column);
   }
 }
