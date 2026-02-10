@@ -6,6 +6,7 @@ import { OverlayEventDetail } from '@ionic/core/components';
 import { TeamMemberService } from 'src/app/servicies/team-member.service';
 import { TeamMember } from 'src/app/models/team-members.modal';
 import { LoadFilesService } from 'src/app/servicies/load-files.service';
+import { AdminCardComponent } from "src/app/components/admin-card/admin-card.component";
 
 @Component({
     selector: 'app-team',
@@ -22,6 +23,8 @@ import { LoadFilesService } from 'src/app/servicies/load-files.service';
     <ion-content>
       <ion-grid>
         <div class="grid-container">
+          <!-- Admin card -->
+          <app-admin-card (adminLoginStatus)="handleAdminLogin($event)"></app-admin-card>
           @for(teamMember of this.teamMemberService.getDbTeamMembers()(); track $index){
             <ion-card [routerLink]="[teamMember.id]">
               <ion-row>
@@ -100,28 +103,29 @@ import { LoadFilesService } from 'src/app/servicies/load-files.service';
   `,
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
-        RouterLink,
-        IonHeader,
-        IonToolbar,
-        IonButton,
-        IonButtons,
-        IonBackButton,
-        IonTitle,
-        IonContent,
-        IonGrid,
-        IonRow,
-        IonCol,
-        IonAvatar,
-        IonItem,
-        IonCard,
-        IonModal,
-        TeamMemberFormComponent
-    ]
+    RouterLink,
+    IonHeader,
+    IonToolbar,
+    IonButton,
+    IonButtons,
+    IonBackButton,
+    IonTitle,
+    IonContent,
+    IonGrid,
+    IonRow,
+    IonCol,
+    IonAvatar,
+    IonItem,
+    IonCard,
+    IonModal,
+    TeamMemberFormComponent,
+    AdminCardComponent
+]
 })
 export class TeamPage implements OnInit {
   @ViewChild(IonModal) modal!: IonModal;
   
-  constructor(public teamMemberService: TeamMemberService, private loadFilesService: LoadFilesService) { }
+  constructor(public teamMemberService: TeamMemberService, private loadFilesService: LoadFilesService, private router: Router) { }
 
   ngOnInit(): void {
     this.teamMemberService.getTeamMembers();
@@ -159,5 +163,9 @@ export class TeamPage implements OnInit {
     }else{
       return "https://ionicframework.com/docs/img/demos/avatar.svg";
     }
+  }
+
+  handleAdminLogin(isLoggedIn: boolean) {
+    if (isLoggedIn) this.router.navigate(['/team/admin']);
   }
 }
