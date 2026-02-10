@@ -31,7 +31,7 @@ import { environment } from 'src/environments/environment';
 export class AdminCardComponent {
   @Output() adminLoginStatus = new EventEmitter<boolean>();
 
-  adminPassword = environment.adminPassord;
+  adminPassword = environment.adminPassword;
 
   constructor(private alertController: AlertController, private toastController: ToastController) {}
 
