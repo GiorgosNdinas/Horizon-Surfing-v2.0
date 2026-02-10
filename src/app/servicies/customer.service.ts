@@ -23,6 +23,12 @@ export class CustomerService {
     // this.dbSearchCustomers.set(this.dbCustomers());
   }
 
+
+  async getCustomersByYear(year: number) {
+    const customers = await this.dataProvider.getCustomersByYear(year);
+    this.dbCustomers.set(customers);
+  }
+
   // Function that gets all customers that haven't paid yet
   async getUnpaidCustomers() {
     const customers = await this.dataProvider.getUnpaidCustomers();

@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit, ViewChild } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { IonAvatar, IonBackButton, IonButton, IonButtons, IonCard, IonCol, IonContent, IonGrid, IonHeader, IonItem, IonModal, IonRow, IonTitle, IonToolbar } from '@ionic/angular/standalone';
+import { AlertController, IonAvatar, IonBackButton, IonButton, IonButtons, IonCard, IonCol, IonContent, IonGrid, IonHeader, IonItem, IonModal, IonRow, IonTitle, IonToolbar, ToastController } from '@ionic/angular/standalone';
 import { TeamMemberFormComponent } from "./team-components/team-member-form/team-member-form.component";
 import { OverlayEventDetail } from '@ionic/core/components';
 import { TeamMemberService } from 'src/app/servicies/team-member.service';
@@ -35,11 +35,11 @@ type TeamMemberDisplay = TeamMember & { id?: number | string; role?: string };
                     </ion-avatar>
                   </ion-col>
                   <ion-col size="9">
-                    <ion-item lines="none">
+                    <ion-item lines="none" button detail="false" (click)="openAdminLogin()">
                       <h1>{{teamMember.name}} {{teamMember.surname}}</h1>
                     </ion-item>
                     @if (teamMember.role) {
-                      <ion-item lines="none">
+                      <ion-item lines="none" button detail="false" (click)="openAdminLogin()">
                         <h2>{{teamMember.role}}</h2>
                       </ion-item>
                     }
@@ -156,7 +156,13 @@ export class TeamPage implements OnInit {
   };
 
   
-  constructor(public teamMemberService: TeamMemberService, private loadFilesService: LoadFilesService) { }
+  constructor(
+    public teamMemberService: TeamMemberService,
+    private loadFilesService: LoadFilesService,
+    private alertController: AlertController,
+    private toastController: ToastController,
+    private router: Router
+  ) { }
 
   async ngOnInit() {
     await this.teamMemberService.getTeamMembers();
@@ -165,6 +171,52 @@ export class TeamPage implements OnInit {
 
   teamMembersForDisplay(): TeamMemberDisplay[] {
     return [this.adminTeamMember, ...this.teamMemberService.dbTeamMembers()];
+  }
+
+  async openAdminLogin() {
+    const alert = await this.alertController.create({
+      header: 'Admin Login',
+      inputs: [
+        {
+          name: 'username',
+          type: 'text',
+          value: 'admin',
+          placeholder: 'Username',
+          attributes: { disabled: true }
+        },
+        {
+          name: 'password',
+          type: 'password',
+          placeholder: 'Password'
+        }
+      ],
+      buttons: [
+        { text: 'Cancel', role: 'cancel' },
+        {
+          text: 'Login',
+          handler: async (data) => {
+            if (this.validateAdminLogin(data?.password)) {
+              await this.router.navigate(['/team/admin']);
+              return true;
+            }
+
+            const toast = await this.toastController.create({
+              message: 'Invalid admin password',
+              duration: 2000,
+              color: 'danger'
+            });
+            await toast.present();
+            return false;
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
+  private validateAdminLogin(password?: string): boolean {
+    return password === 'admin';
   }
 
   // Close the customer modal with a 'cancel' action
