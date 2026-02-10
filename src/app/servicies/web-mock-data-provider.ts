@@ -12,7 +12,7 @@ export class WebMockDataProvider implements DataProvider {
   private activitiesKey = 'hs.mock.activities';
   private lessonsKey = 'hs.mock.lessons';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   /**
    * Initializes the mock data provider by seeding localStorage with mock data if not already present.
@@ -78,6 +78,19 @@ export class WebMockDataProvider implements DataProvider {
     return [...customers].sort((a, b) => (b.id ?? 0) - (a.id ?? 0));
   }
 
+  /** 
+   * Retrieves the list of customers from localStorage filtered by a specific year, sorted by ID in descending order.
+   * 
+   * @param year - The year to filter customers by.
+   * 
+   * @return A promise that resolves to an array of Customer objects for the specified year.
+   */
+  async getCustomersByYear(year: number): Promise<Customer[]> {
+    const customers = this.read<Customer[]>(this.customersKey, []);
+    return customers
+      .filter((customer) => new Date(customer.departureDate).getFullYear() === year)
+      .sort((a, b) => (b.id ?? 0) - (a.id ?? 0));
+  }
   /**
    * Retrieves the list of unpaid customers from localStorage, sorted by ID in descending order.
    * 

@@ -16,6 +16,7 @@ export interface DataProvider {
   addTeamMember(teamMember: TeamMember): Promise<void>;
   deleteTeamMember(teamMember: TeamMember): Promise<void>;
   getCustomers(): Promise<Customer[]>;
+  getCustomersByYear(year: number): Promise<Customer[]>;
   getUnpaidCustomers(): Promise<Customer[]>;
   addCustomer(customer: Customer): Promise<void>;
   updateCustomer(customer: Customer): Promise<void>;

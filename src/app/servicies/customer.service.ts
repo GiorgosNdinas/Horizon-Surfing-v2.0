@@ -30,6 +30,20 @@ export class CustomerService {
   }
 
   /**
+   * Function that gets customers from the database filtered by a specific year
+   * 
+   * @param {number} year - The year to filter customers by.
+   * 
+   * @return {Promise<void>} A promise that resolves when the customers are fetched and stored.
+   * 
+   * @throws Will throw an error if the database query fails.
+   */
+  async getCustomersByYear(year: number){
+    const customers = await this.dataProvider.getCustomersByYear(year);
+    this.dbCustomers.set(customers);
+  }
+
+  /**
    * Function that gets all customers that haven't paid yet
    * 
    * @return {Promise<void>} A promise that resolves when the unpaid customers are fetched and stored.

@@ -74,6 +74,19 @@ export class SqliteDataProvider implements DataProvider {
   }
 
   /**
+   * Gets customers from the database filtered by a specific year.
+   * 
+   * @param year The year to filter customers by.
+   * 
+   * @return A promise that resolves to an array of Customer objects.
+   */
+  async getCustomersByYear(year: number): Promise<Customer[]> {
+    const db = await this.getDb();
+    const customers = await db.query(`SELECT * FROM customer WHERE strftime('%Y', departureDate) = ? ORDER BY id DESC`, [year.toString()]);
+    return customers.values || [];
+  }
+
+  /**
    * Gets all unpaid customers from the database.
    * 
    * @return A promise that resolves to an array of unpaid Customer objects.
