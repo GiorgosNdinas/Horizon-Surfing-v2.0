@@ -49,6 +49,13 @@ export class WebMockDataProvider implements DataProvider {
     return [...customers].sort((a, b) => (b.id ?? 0) - (a.id ?? 0));
   }
 
+  async getCustomersByYear(year: number): Promise<Customer[]> {
+    const customers = this.read<Customer[]>(this.customersKey, []);
+    return customers
+      .filter((customer) => new Date(customer.departureDate).getFullYear() === year)
+      .sort((a, b) => (b.id ?? 0) - (a.id ?? 0));
+  }
+
   async getUnpaidCustomers(): Promise<Customer[]> {
     const customers = this.read<Customer[]>(this.customersKey, []);
     return customers

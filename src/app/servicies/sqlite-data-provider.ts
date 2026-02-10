@@ -41,6 +41,12 @@ export class SqliteDataProvider implements DataProvider {
     return customers.values || [];
   }
 
+  async getCustomersByYear(year: number): Promise<Customer[]> {
+    const db = await this.getDb();
+    const customers = await db.query(`SELECT * FROM customer WHERE strftime('%Y', departureDate) = '${year}' ORDER BY id DESC`);
+    return customers.values || [];
+  }
+
   async getUnpaidCustomers(): Promise<Customer[]> {
     const db = await this.getDb();
     const customers = await db.query('SELECT * FROM customer WHERE paid = 0 ORDER BY id DESC');
