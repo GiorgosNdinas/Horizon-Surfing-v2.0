@@ -38,7 +38,7 @@ export class CustomerService {
    * 
    * @throws Will throw an error if the database query fails.
    */
-  async getCustomersByYear(year: number){
+  async getCustomersByYear(year: number) {
     const customers = await this.dataProvider.getCustomersByYear(year);
     this.dbCustomers.set(customers);
   }
@@ -65,19 +65,25 @@ export class CustomerService {
    */
   async addCustomer(customer: Customer) {
     await this.dataProvider.addCustomer(customer);
-    await this.getCustomers();
+    await this.getUnpaidCustomers();
   }
 
   /**
    * Function to update an existing customer in the database
    * 
    * @param customer 
+   * @param route - The main route to determine the context of the update (e.g., 'customer' or 'team').
    * @return {Promise<void>} A promise that resolves when the customer is updated and the customer list is refreshed.
    * 
    * @throws Will throw an error if the database update fails.
    */
-  async updateCustomer(customer: Customer) {
+  async updateCustomer(customer: Customer, route: string) {
     await this.dataProvider.updateCustomer(customer);
-    await this.getCustomers();
+
+    if (route === 'customers') {
+      await this.getUnpaidCustomers();
+    } else {
+      await this.getCustomers();
+    }
   }
 }

@@ -6,7 +6,7 @@ import { IonBackButton, IonButton, IonButtons, IonCard, IonCardContent, IonCardH
 import { Customer } from 'src/app/models/customer.model';
 import { CustomerFormComponent } from '../components/customer-form/customer-form.component';
 import { ActivityListComponent } from "../../../components/activity-list/activity-list.component";
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { ActivityService } from 'src/app/servicies/activity.service';
 import { ErrorService } from 'src/app/servicies/error.service';
 import { PaidButtonComponent } from "../components/paid-button/paid-button.component";
@@ -76,6 +76,7 @@ export class CustomerDetailsPage implements OnInit {
   customerService = inject(CustomerService);
   activitiesService = inject(ActivityService);
   errors = inject(ErrorService);
+  router = inject(Router);
 
 
   customerForDisplay!: Customer;
@@ -95,8 +96,13 @@ export class CustomerDetailsPage implements OnInit {
   }
 
   updateCustomer(updatedCustomer: Customer) {
+    const url = this.router.url; // Expected format: /customer/2 or /team/admin/3
+    const segments = url.split('/').filter(Boolean);
+
+    const mainRoute = segments[0]; // 'customers' or 'team'
+
     updatedCustomer.id = this.customerForDisplay.id;
-    this.customerService.updateCustomer(updatedCustomer)
+    this.customerService.updateCustomer(updatedCustomer, mainRoute)
       .then(() => {
         // To be changed: show a toast message instead of console log
         console.log('Customer updated successfully');

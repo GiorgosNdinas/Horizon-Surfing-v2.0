@@ -36,7 +36,7 @@ export class CustomersPage implements OnInit {
   constructor(private customerService: CustomerService) {
   }
   ngOnInit(): void {
-    this.customerService.getCustomers();
+    this.customerService.getUnpaidCustomers();
   }
   
   customerList = this.customerService.dbCustomersSignal;

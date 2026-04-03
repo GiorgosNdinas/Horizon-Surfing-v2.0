@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, OnInit, signal } from '@angular/core';
-import { IonHeader, IonToolbar, IonButtons, IonBackButton, IonTitle, IonButton, IonContent, IonItem, IonLabel, IonSelect, IonSelectOption, ToastController  } from "@ionic/angular/standalone";
+import { IonHeader, IonToolbar, IonButtons, IonBackButton, IonTitle, IonButton, IonContent, IonItem, IonLabel, IonSelect, IonSelectOption, ToastController } from "@ionic/angular/standalone";
 import { CustomerService } from 'src/app/servicies/customer.service';
 import { CustomerListComponent } from "src/app/components/customer-list/customer-list.component";
 
@@ -14,17 +14,16 @@ import { CustomerListComponent } from "src/app/components/customer-list/customer
       <ion-buttons slot="start">
         <ion-back-button defaultHref="/team"></ion-back-button>
       </ion-buttons>
-      <ion-title>Admin</ion-title>
-      <ion-content>
-        <ion-item>
-          <ion-label>Year</ion-label>
-          <ion-select [value]="selectedYear()" (ionChange)="onYearChange($event.detail.value)">
-            @for(year of yearOptions; track year){
-              <ion-select-option [value]="year">{{ year}}</ion-select-option>
-            }
-          </ion-select>
-        </ion-item>
-      </ion-content>
+      <ion-title>Admin
+      </ion-title>
+      <ion-item slot="end">
+        <ion-label class="label-year">Year</ion-label>
+        <ion-select [value]="selectedYear()" (ionChange)="onYearChange($event.detail.value)">
+          @for(year of yearOptions; track year){
+            <ion-select-option [value]="year">{{ year}}</ion-select-option>
+          }
+        </ion-select>
+      </ion-item>
       <ion-buttons slot="end">
         <ion-button (click)="onExport()">Export</ion-button>
       </ion-buttons>
@@ -45,7 +44,7 @@ export class AdminPage implements OnInit {
 
   customerList = this.customerService.dbCustomersSignal;
 
-  constructor(private customerService: CustomerService, private toastController: ToastController){}
+  constructor(private customerService: CustomerService, private toastController: ToastController) { }
 
   async ngOnInit() {
     await this.customerService.getCustomersByYear(this.selectedYear());
@@ -56,7 +55,7 @@ export class AdminPage implements OnInit {
     await this.customerService.getCustomersByYear(this.selectedYear());
   }
 
-  async onExport(){
+  async onExport() {
     const toast = await this.toastController.create({
       message: 'Export coming soon!',
       duration: 2000,
@@ -64,4 +63,4 @@ export class AdminPage implements OnInit {
     });
     await toast.present();
   }
- }
+}

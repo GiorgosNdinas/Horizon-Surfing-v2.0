@@ -313,6 +313,10 @@ export class CustomerFormComponent implements OnChanges {
 
     const raw = this.customerForm.getRawValue(); // includes disabled controls
 
+    if(raw.paid === null || raw.paid === undefined){
+      raw.paid = 0;
+    }
+
     const customer: Customer = {
       name: raw.name!,
       surname: raw.surname!,
@@ -326,7 +330,7 @@ export class CustomerFormComponent implements OnChanges {
       terms: raw.terms!,
       paid: raw.paid!,
     };
-
+    
     this.customerSubmitted.emit(customer);
   }
 }
