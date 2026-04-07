@@ -3,11 +3,12 @@ import { ChangeDetectionStrategy, Component, OnInit, signal } from '@angular/cor
 import { IonHeader, IonToolbar, IonButtons, IonBackButton, IonTitle, IonButton, IonContent, IonItem, IonLabel, IonSelect, IonSelectOption, ToastController } from "@ionic/angular/standalone";
 import { CustomerService } from 'src/app/servicies/customer.service';
 import { CustomerListComponent } from "src/app/components/customer-list/customer-list.component";
+import { ExportButtonComponent } from "src/app/components/export-button/export-button.component";
 
 @Component({
   selector: 'app-admin',
   standalone: true,
-  imports: [CommonModule, IonHeader, IonToolbar, IonButtons, IonBackButton, IonTitle, IonButton, IonContent, IonItem, IonLabel, IonSelect, IonSelectOption, CustomerListComponent],
+  imports: [CommonModule, IonHeader, IonToolbar, IonButtons, IonBackButton, IonTitle, IonContent, IonItem, IonLabel, IonSelect, IonSelectOption, CustomerListComponent, ExportButtonComponent],
   template: `
   <ion-header>
     <ion-toolbar>
@@ -25,7 +26,7 @@ import { CustomerListComponent } from "src/app/components/customer-list/customer
         </ion-select>
       </ion-item>
       <ion-buttons slot="end">
-        <ion-button (click)="onExport()">Export</ion-button>
+        <app-export-button [customersForExport]="customerList()" [selectedYear]="selectedYear"></app-export-button>
       </ion-buttons>
     </ion-toolbar>
   </ion-header>
@@ -53,14 +54,5 @@ export class AdminPage implements OnInit {
   async onYearChange(year: number) {
     this.selectedYear.set(year);
     await this.customerService.getCustomersByYear(this.selectedYear());
-  }
-
-  async onExport() {
-    const toast = await this.toastController.create({
-      message: 'Export coming soon!',
-      duration: 2000,
-      color: 'medium'
-    });
-    await toast.present();
   }
 }
