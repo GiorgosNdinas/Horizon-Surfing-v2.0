@@ -1,8 +1,9 @@
-import { IonButton, ToastController  } from '@ionic/angular/standalone';
-import { ChangeDetectionStrategy, Component, inject, Input, Signal, WritableSignal } from '@angular/core';
+import { IonButton, ToastController } from '@ionic/angular/standalone';
+import { ChangeDetectionStrategy, Component, inject, Input, Signal } from '@angular/core';
 import { Customer } from 'src/app/models/customer.model';
 import { Capacitor } from '@capacitor/core';
 import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
+import * as XLSX from 'xlsx';
 
 @Component({
   selector: 'app-export-button',
@@ -25,14 +26,14 @@ export class ExportButtonComponent {
       return;
     }
 
-    const fileName = `customers_${this.selectedYear()}.csv`;
-    const csv = this.buildCustomerCsv(this.customersForExport);
+    const fileName = `customers_${this.selectedYear()}.xlsx`;
+    const workbook = this.buildCustomerWorkbook(this.customersForExport);
 
     try {
       if (Capacitor.getPlatform() === 'web') {
-        this.exportForBrowser(csv, fileName);
+        this.exportForBrowser(workbook, fileName);
       } else {
-        await this.exportForNative(csv, fileName);
+        await this.exportForNative(workbook, fileName);
       }
 
       await this.presentToast(`Exported ${this.customersForExport.length} customers to ${fileName}.`, 'success');
@@ -43,7 +44,7 @@ export class ExportButtonComponent {
 
   }
 
-  private buildCustomerCsv(customers: Customer[]): string {
+  private buildCustomerWorkbook(customers: Customer[]): XLSX.WorkBook {
     const colums: Array<{ key: keyof Customer, title: string }> = [
       { key: 'id', title: 'ID' },
       { key: 'name', title: 'Name' },
@@ -58,19 +59,28 @@ export class ExportButtonComponent {
       { key: 'paid', title: 'Paid' }
     ];
 
-    const header = colums.map((column) => this.escapeCsvValue(column.title)).join(',');
-
     const rows = customers.map((customer) => {
-      return colums
-        .map((column) => this.escapeCsvValue(this.toCsvValue(customer[column.key])))
-        .join(',');
+      const row: Record<string, string> = {};
+
+      colums.forEach((column) => {
+        row[column.title] = this.toExportValue(customer[column.key]);
+      });
+
+      return row;
     });
 
-    return [header, ...rows].join('\n');
+    const worksheet = XLSX.utils.json_to_sheet(rows, {
+      header: colums.map((column) => column.title)
+    });
+    const workbook = XLSX.utils.book_new();
+
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Customers');
+
+    return workbook;
   }
 
-  // Converts a value to a string suitable for CSV output, handling nulls and objects.
-  private toCsvValue(value: unknown): string {
+  // Converts a value to a string suitable for export, handling nulls and objects.
+  private toExportValue(value: unknown): string {
     if (value == null) {
       return '';
     }
@@ -82,14 +92,12 @@ export class ExportButtonComponent {
     return String(value);
   }
 
-  // Escapes a value for CSV format, adding quotes if necessaryand doubling any existing quotes within the value.
-  private escapeCsvValue(value: string): string {
-    const escapedValue = value.replace(/"/g, '""');
-    return /[",\n\r]/.test(escapedValue) ? `"${escapedValue}"` : escapedValue;
-  }
 
-  private exportForBrowser(csv: string, fileName: string): void {
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  private exportForBrowser(workbook: XLSX.WorkBook, fileName: string): void {
+    const workbookArray = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    const blob = new Blob([workbookArray], {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
 
@@ -101,12 +109,13 @@ export class ExportButtonComponent {
     URL.revokeObjectURL(url);
   }
 
-  private async exportForNative(csv: string, fileName: string): Promise<void> {
+  private async exportForNative(workbook: XLSX.WorkBook, fileName: string): Promise<void> {
+    const workbookBase64 = XLSX.write(workbook, { bookType: 'xlsx', type: 'base64' });
+
     const { uri } = await Filesystem.writeFile({
       directory: Directory.Documents,
       path: fileName,
-      data: csv,
-      encoding: Encoding.UTF8,
+      data: workbookBase64,
       recursive: true
     });
 
@@ -117,8 +126,8 @@ export class ExportButtonComponent {
       window.open(uri, '_system');
     }
   }
-  
-  private async presentToast(message: string, color: 'success' | 'medium' | 'danger') { 
+
+  private async presentToast(message: string, color: 'success' | 'medium' | 'danger') {
     const toast = await this.toastController.create({
       message,
       duration: 2500,
